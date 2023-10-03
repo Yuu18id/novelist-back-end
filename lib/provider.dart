@@ -44,6 +44,7 @@ class ScreenPageProvider extends ChangeNotifier {
 
   Map novel = {};
 
+//penerapan future asinkron dalam mengambil data novel
   Future<Map> getNovelData() async {
     final res = await http.get(Uri.parse("https://raw.githubusercontent.com/Yuu18id/resources/main/novel.json"));
 

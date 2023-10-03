@@ -18,20 +18,17 @@ class _HomePageState extends State<HomePage> {
     final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
         body: Center(
+            //penerapan futurebuilder dalam menampilkan data future
       child: FutureBuilder(
         future: prov.getNovelData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            // Menampilkan indikator loading jika data sedang diambil
             return CircularProgressIndicator();
           } else if (snapshot.hasError) {
-            // Menampilkan pesan error jika terjadi kesalahan
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData) {
-            // Menampilkan pesan jika data kosong
             return Text('Tidak ada data');
           } else {
-            // Menampilkan data setelah berhasil diambil
             final novelData = snapshot.data;
             return Container(
               padding: EdgeInsets.all(10.0),
