@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
@@ -18,7 +16,10 @@ class AboutPage extends StatelessWidget {
             children: [
               Container(
                 padding: EdgeInsets.only(bottom: 24),
-                child: Text('KELOMPOK 7', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),),
+                child: Text(
+                  'KELOMPOK 7',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
               ),
               Text('211112007 - Bayu Arma Praja'),
               Text('211111151 - Herri Suba L. Tobing'),

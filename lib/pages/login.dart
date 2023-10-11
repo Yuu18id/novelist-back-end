@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_application_1/pages/home.dart';
-import 'package:flutter_application_1/pages/register.dart';
+import 'package:flutter_application_1/components/auth_provider.dart';
 import 'package:flutter_application_1/pages/screen.dart';
-import 'package:flutter_application_1/provider.dart';
+import 'package:flutter_application_1/pages/register.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_1/models/db_helper.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -15,108 +13,118 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  TextEditingController username = TextEditingController();
-  TextEditingController password = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final dbHelper = DBHelper.instance;
 
-  bool isUserOrPassWrong = false;
   @override
   Widget build(BuildContext context) {
-    final prov = Provider.of<ScreenPageProvider>(context);
+    final provAuth = Provider.of<AuthProvider>(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Log In'),
-      ),
       body: Container(
         color: Colors.white,
-        padding: EdgeInsets.all(30.0),
+        padding: const EdgeInsets.all(30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Log In',
               style: TextStyle(fontSize: 29),
             ),
             Container(
-              padding: EdgeInsets.only(top: 50),
+              padding: const EdgeInsets.only(top: 50),
               child: TextFormField(
-                controller: username,
-                decoration: InputDecoration(
+                controller: _usernameController,
+                decoration: const InputDecoration(
                   label: Text('Username'),
                 ),
               ),
             ),
             Container(
-              padding: EdgeInsets.only(top: 20),
+              padding: const EdgeInsets.only(top: 20),
               child: TextFormField(
+                controller: _passwordController,
                 obscureText: true,
-                controller: password,
-                decoration: InputDecoration(
-                  label: Text('Password'),
-                ),
+                decoration: const InputDecoration(label: Text('Password')),
               ),
             ),
-            if (isUserOrPassWrong != false)
-              Container(
-                padding: EdgeInsets.only(top: 10),
-                child: Text(
-                  'Email atau password salah',
-                  style: TextStyle(color: Colors.red),
-                ),
-              ),
             Container(
-              padding: EdgeInsets.only(top: 40),
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () {
-                  bool isLoginSuccessful = false;
-                  String email = '';
+                padding: const EdgeInsets.only(top: 40),
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    final username = _usernameController.text;
+                    final password = _passwordController.text;
 
-                  for (Map userData in prov.user['data']) {
-                    if (userData['username'] == username.text &&
-                        userData['password'] == password.text) {
-                      isLoginSuccessful = true;
-                      setState(() {
-                        email = userData['email'];
-                        prov.setUsername = username.text;
-                      });
-                      break;
-                    }
-                  }
+                    if (username.isNotEmpty && password.isNotEmpty) {
+                      try {
+                        final existingUser = await dbHelper
+                            .getUserByUsernameAndPass(username, password);
 
-                  if (isLoginSuccessful) {
-                    setState(() {
-                      isUserOrPassWrong = false;
-                    });
+                        if (existingUser != null) {
+                          if (existingUser.pass == password) {
+                            await provAuth.login(username, password);
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text('Login Berhasil'),
+                              duration: Duration(seconds: 2),
+                            ));
 
-                    prov.login = true;
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) {
-                      return ScreenPage(
-                        username: username.text,
-                        email: email,
+                            // Mengambil ID pengguna setelah login berhasil
+                            final userId = existingUser.id;
+
+                            // Mengambil data pengguna berdasarkan ID
+                            final userById =
+                                await dbHelper.getUserById(userId!);
+
+                            if (userById != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ScreenPage(
+                                    username: userById.username,
+                                  ),
+                                ),
+                              );
+                            }
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Password salah')),
+                            );
+                          }
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Username tidak ditemukan')),
+                          );
+                        }
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Login gagal: $e')),
+                        );
+                      }
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Username dan password harus diisi'),
+                        ),
                       );
-                    }));
-                  } else {
-                    setState(() {
-                      isUserOrPassWrong = true;
-                    });
-                  }
-                },
-                child: Text('Log In'),
-              ),
-            ),
+                    }
+                  },
+                  child: const Text('Log In'),
+                )),
             Container(
-              padding: EdgeInsets.only(top: 10),
+              padding: const EdgeInsets.only(top: 10),
               width: double.infinity,
               child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => RegisterPage()));
-                  },
-                  child: Text('Register')),
-            ),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const Daftar()));
+                },
+                child: const Text('Register'),
+              ),
+            )
           ],
         ),
       ),

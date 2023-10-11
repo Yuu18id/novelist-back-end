@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_application_1/components/auth_provider.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
@@ -9,9 +8,8 @@ import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
 
 class ScreenPage extends StatefulWidget {
-  const ScreenPage({super.key, required this.username, required this.email});
+  const ScreenPage({super.key, required this.username});
   final String username;
-  final String email;
 
   @override
   State<ScreenPage> createState() => _ScreenPageState();
@@ -27,26 +25,27 @@ class _ScreenPageState extends State<ScreenPage> {
   }
 
   List judul = ['Novelist', 'Favorites', 'Profile'];
-  List pages = [HomePage(), FavoritesBodyPage()];
+  List pages = [const HomePage(), const FavoritesBodyPage()];
 
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
+    final prov1 = Provider.of<AuthProvider>(context);
     return Scaffold(
       drawer: Drawer(
           child: ListView(padding: EdgeInsets.zero, children: [
         DrawerHeader(
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(color: Colors.lightBlue),
-            child: prov.isLogin == false //&& prov.username == ''
+            padding: const EdgeInsets.all(16.0),
+            decoration: const BoxDecoration(color: Colors.lightBlue),
+            child: prov1.currentUser == null //&& prov.username == ''
                 ? Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       backgroundColor: Colors.white,
                       minRadius: 12,
                       maxRadius: 24,
                     ),
                     Padding(
-                        padding: EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 16),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -56,9 +55,10 @@ class _ScreenPageState extends State<ScreenPage> {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => LoginPage()));
+                                          builder: (context) =>
+                                              const LoginPage()));
                                 },
-                                child: Text('Log In',
+                                child: const Text('Log In',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -67,24 +67,19 @@ class _ScreenPageState extends State<ScreenPage> {
                             ])),
                   ])
                 : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    CircleAvatar(
-                      child: Icon(Icons.person),
+                    const CircleAvatar(
                       minRadius: 12,
                       maxRadius: 24,
+                      child: Icon(Icons.person),
                     ),
                     Padding(
-                        padding: EdgeInsets.only(left: 16),
+                        padding: const EdgeInsets.only(left: 16),
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(widget.username,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                              Text(widget.email,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                   )),
@@ -93,42 +88,45 @@ class _ScreenPageState extends State<ScreenPage> {
         ListTile(
           onTap: () {
             Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => AboutPage()));
+                MaterialPageRoute(builder: (context) => const AboutPage()));
           },
-          leading: Icon(Icons.info),
-          title: Text('About'),
-          trailing: Icon(Icons.keyboard_arrow_right_outlined),
+          leading: const Icon(Icons.info),
+          title: const Text('About'),
+          trailing: const Icon(Icons.keyboard_arrow_right_outlined),
         ),
-        if (prov.isLogin == true)
+        if (prov1.currentUser != null)
           ListTile(
             onTap: () {
               showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                        title: Text("Log Out"),
-                        content: Text("Apakah anda yakin ingin Log Out?"),
+                        title: const Text("Log Out"),
+                        content: const Text("Apakah anda yakin ingin Log Out?"),
                         actions: [
                           TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                               },
-                              child: Text("Kembali")),
+                              child: const Text("Kembali")),
                           ElevatedButton(
                               onPressed: () {
                                 setState(() {
-                                  prov.login = false;
-                                  prov.setUsername = '';
+                                  prov1.logout();
                                 });
-                                Navigator.of(context).pop();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const LoginPage()));
                               },
-                              child: Text("Log Out"))
+                              child: const Text("Log Out"))
                         ],
                       ));
             },
-            leading: Icon(Icons.logout),
-            title: Text('Log Out'),
+            leading: const Icon(Icons.logout),
+            title: const Text('Log Out'),
           ),
-        Divider(),
+        const Divider(),
       ])),
       appBar: AppBar(
         title: Text(judul[_currentIndex]),
@@ -138,7 +136,7 @@ class _ScreenPageState extends State<ScreenPage> {
           onTap: onTabTapped,
           currentIndex: _currentIndex,
           showUnselectedLabels: false,
-          items: [
+          items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.thumb_up), label: 'Favorites'),

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_1/components/auth_provider.dart';
 
 class DetailPage extends StatefulWidget {
   final Map data;
@@ -16,6 +15,7 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
+    final prov1 = Provider.of<AuthProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Detail'),
@@ -31,7 +31,7 @@ class _DetailPageState extends State<DetailPage> {
               ),
               Container(
                 padding: EdgeInsets.only(top: 20, bottom: 10),
-                child: prov.isLogin
+                child: prov1.currentUser == null
                     ? ListTile(
                         contentPadding: EdgeInsets.zero,
                         dense: true,
@@ -69,17 +69,25 @@ class _DetailPageState extends State<DetailPage> {
                                   setState(() {
                                     user['isFavorited'] == true;
                                   });
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(SnackBar(
-                                    content: Text(
-                                        '${widget.data["name"]} ditambahkan ke favorit'),
-                                  ));
+                                  ScaffoldMessenger.of(
+                                    context,
+                                  ).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                          '${widget.data["name"]} ditambahkan ke favorit'),
+                                    ),
+                                  );
                                 }
                               }
                             },
                             icon: Icon(prov.user["data"]
-                                  .firstWhere((userData) =>
-                                      userData['username'] == prov.username)['favorites'].contains(widget.data) != true? Icons.favorite_border_outlined : Icons.favorite)),
+                                        .firstWhere((userData) =>
+                                            userData['username'] ==
+                                            prov.username)['favorites']
+                                        .contains(widget.data) !=
+                                    true
+                                ? Icons.favorite_border_outlined
+                                : Icons.favorite)),
                       )
                     : ListTile(
                         contentPadding: EdgeInsets.zero,

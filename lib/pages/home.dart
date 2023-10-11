@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/detail.dart';
 import 'package:flutter_application_1/provider.dart';
@@ -18,20 +16,20 @@ class _HomePageState extends State<HomePage> {
     final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
         body: Center(
-            //penerapan futurebuilder dalam menampilkan data future
+      //penerapan futurebuilder dalam menampilkan data future
       child: FutureBuilder(
         future: prov.getNovelData(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else if (!snapshot.hasData) {
-            return Text('Tidak ada data');
+            return const Text('Tidak ada data');
           } else {
             final novelData = snapshot.data;
             return Container(
-              padding: EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(10.0),
               child: Column(
                 children: [
                   Expanded(
@@ -69,14 +67,14 @@ class _HomePageState extends State<HomePage> {
                                   bottom: 12,
                                   left: 10,
                                   child: Container(
-                                    padding: EdgeInsets.all(10),
+                                    padding: const EdgeInsets.all(10),
                                     decoration: BoxDecoration(
                                       color: Colors.black.withOpacity(0.5),
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
                                     child: Text(
                                       data["name"],
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 11),

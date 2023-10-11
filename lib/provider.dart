@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class ScreenPageProvider extends ChangeNotifier {
-
   List _favList = [];
 
   List get favList => _favList;
@@ -15,7 +13,8 @@ class ScreenPageProvider extends ChangeNotifier {
   }
 
   set setFavListDel(val) {
-    _favList.removeWhere((innerList) => innerList[0] == val[0] && innerList[1] == val[1]);
+    _favList.removeWhere(
+        (innerList) => innerList[0] == val[0] && innerList[1] == val[1]);
     notifyListeners();
   }
 
@@ -37,8 +36,20 @@ class ScreenPageProvider extends ChangeNotifier {
 
   Map user = {
     'data': [
-      {'email': 'test@mail.com', 'username': 'test', 'password': 'test123', "favorites" : [], "birthday" : ""},
-      {'email': 'bayu@mail.com', 'username': 'bayu', 'password': 'bayu123', "favorites" : [], "birthday" : ""}
+      {
+        'email': 'test@mail.com',
+        'username': 'test',
+        'password': 'test123',
+        "favorites": [],
+        "birthday": ""
+      },
+      {
+        'email': 'bayu@mail.com',
+        'username': 'bayu',
+        'password': 'bayu123',
+        "favorites": [],
+        "birthday": ""
+      }
     ]
   };
 
@@ -46,14 +57,14 @@ class ScreenPageProvider extends ChangeNotifier {
 
 //penerapan future asinkron dalam mengambil data novel
   Future<Map> getNovelData() async {
-    final res = await http.get(Uri.parse("https://raw.githubusercontent.com/Yuu18id/resources/main/novel.json"));
+    final res = await http.get(Uri.parse(
+        "https://raw.githubusercontent.com/Yuu18id/resources/main/novel.json"));
 
     if (res.statusCode == 200) {
-        Map novel = json.decode(res.body);
-        return novel;
-    }
-    else {
-        throw Exception("Gagal mengambil data");
+      Map novel = json.decode(res.body);
+      return novel;
+    } else {
+      throw Exception("Gagal mengambil data");
     }
   }
 
