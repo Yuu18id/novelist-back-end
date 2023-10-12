@@ -39,6 +39,8 @@ dependencies:
   flutter_native_splash: ^2.2.19
   http: ^0.13.6
   sqflite: ^2.2.8+4
+  flutter_rating_bar: ^4.0.1
+  shared_preferences: ^2.2.2
 
 
 

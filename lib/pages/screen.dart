@@ -88,7 +88,7 @@ class _ScreenPageState extends State<ScreenPage> {
         ListTile(
           onTap: () {
             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => const AboutPage()));
+                MaterialPageRoute(builder: (context) => AboutPage()));
           },
           leading: const Icon(Icons.info),
           title: const Text('About'),

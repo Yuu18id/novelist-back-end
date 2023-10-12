@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/user.dart';
+import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
+import 'package:flutter_application_1/provider.dart';
+import 'package:provider/provider.dart';
 
-class Daftar extends StatefulWidget {
-  const Daftar({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<Daftar> createState() => _DaftarState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _DaftarState extends State<Daftar> {
+class _RegisterPageState extends State<RegisterPage> {
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   DateTime date = DateTime.now();
-  bool isDataSet = false;
+  bool isDateSet = false;
   final dbHelper = DBHelper.instance;
 
-  final TextEditingController _usernameController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  bool? isUsernameEmpty;
+  bool? isEmailEmpty;
+  bool? isPasswordEmpty;
 
+  bool isObscure = true;
   @override
   Widget build(BuildContext context) {
+    final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Register'),
@@ -31,82 +40,67 @@ class _DaftarState extends State<Daftar> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Register',
-              style: TextStyle(fontSize: 29),
-            ),
+            const Text('Register', style: TextStyle(
+            fontSize: 29
+        ),),
             Container(
-              padding: const EdgeInsets.only(top: 40),
+                padding: const EdgeInsets.only(top: 40),
               child: TextFormField(
-                controller: _usernameController,
-                decoration: const InputDecoration(
-                  label: Text('Username'),
-                  // errorText: is
+                  controller: _usernameController,
+                decoration: InputDecoration(
+                  label: const Text('Username'),
+                  errorText:
+                      isUsernameEmpty == true ? 'Username harus diisi' : null,
                 ),
               ),
             ),
-            // Container(
-            //   padding: const EdgeInsets.only(top: 15),
-            //   child: TextFormField(
-            //     controller: _usernameController,
-            //     decoration: const InputDecoration(
-            //       label: Text('Email'),
-            //     ),
-            //   ),
-            // ),
             Container(
-              padding: const EdgeInsets.only(top: 15),
-              child: TextFormField(
+                padding: const EdgeInsets.only(top: 15),
+                child: TextFormField(
+                obscureText: isObscure,
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  label: Text('Password'),
+                decoration: InputDecoration(
+                  label: const Text('Password'),
+                  suffixIcon: IconButton(
+                    icon: Icon(isObscure ? Icons.visibility : Icons.visibility_off), 
+                    onPressed: () {
+                      setState(() {
+                        isObscure = !isObscure;
+                      });
+                    },
+                  ),
+                  errorText:
+                    isPasswordEmpty == true ? 'Password harus diisi' : null,
                 ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.only(top: 15),
+             Container(
+                padding: const EdgeInsets.only(top: 15),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 dense: true,
-                visualDensity:
-                    const VisualDensity(horizontal: -4, vertical: -4),
+                visualDensity: const VisualDensity(horizontal: -4, vertical: -4),
                 horizontalTitleGap: 0,
-                title: const Text(
-                  'tanggal Lahir',
-                  style: TextStyle(fontSize: 15),
-                ),
-                trailing: IconButton(
-                  onPressed: () async {
+                title: const Text('Tanggal Lahir', style: TextStyle(fontSize: 15),),
+                trailing: IconButton(onPressed: () async {
                     var res = await showDatePicker(
-                        initialDate: date,
-                        context: context,
                         initialDatePickerMode: DatePickerMode.year,
-                        firstDate: DateTime(1970, 01, 01),
-                        lastDate: DateTime.now());
-
+                        context: context,
+                    initialDate: prov.date, firstDate: DateTime(1970, 01, 01), lastDate: DateTime.now());
+      
                     if (res != null) {
-                      setState(() {
-                        date = res;
-                        isDataSet = true;
-                      });
+                        print(res.toString());
+                        setState(() {
+                          prov.date = res;
+                          prov.isDateSet = true;
+                        });
                     }
-                  },
-                  icon: const Icon(Icons.calendar_month),
-                ),
+                }, icon: const Icon(Icons.calendar_month)),
               ),
             ),
-            isDataSet != false
-                ? Text(
-                    date.toString().split(' ')[0],
-                    textAlign: TextAlign.left,
-                  )
-                : const Text(
-                    'Silahkan isi tanggal lahir',
-                    style: TextStyle(fontSize: 13),
-                    textAlign: TextAlign.left,
-                  ),
-            Container(
+            prov.isDateSet != false? Container(
+                child: Text(prov.date.toString().split(' ')[0], textAlign: TextAlign.left,)) : Container(child: const Text('Silahkan isi tanggal lahir', style: TextStyle(fontSize: 13), textAlign: TextAlign.left,),),
+                Container(
               width: double.infinity,
               padding: const EdgeInsets.only(top: 40),
               child: ElevatedButton(
@@ -151,10 +145,9 @@ class _DaftarState extends State<Daftar> {
                     }
                   },
                   child: const Text('Register')),
-            )
+            ),
           ],
         ),
-      ),
-    );
+      ));
   }
 }

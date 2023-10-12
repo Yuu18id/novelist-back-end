@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_application_1/components/auth_provider.dart';
-import 'package:flutter_application_1/pages/screen.dart';
-import 'package:flutter_application_1/pages/register.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
+import 'package:flutter_application_1/pages/home.dart';
+import 'package:flutter_application_1/pages/register.dart';
+import 'package:flutter_application_1/pages/screen.dart';
+import 'package:flutter_application_1/provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -16,12 +21,16 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final dbHelper = DBHelper.instance;
+  bool isUserOrPassWrong = false;
+
 
   @override
   Widget build(BuildContext context) {
     final provAuth = Provider.of<AuthProvider>(context);
-
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Log In'),
+      ),
       body: Container(
         color: Colors.white,
         padding: const EdgeInsets.all(30.0),
@@ -44,16 +53,26 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               padding: const EdgeInsets.only(top: 20),
               child: TextFormField(
-                controller: _passwordController,
                 obscureText: true,
-                decoration: const InputDecoration(label: Text('Password')),
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  label: Text('Password'),
+                ),
               ),
             ),
+            if (isUserOrPassWrong != false)
+              Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: const Text(
+                  'Email atau password salah',
+                  style: TextStyle(color: Colors.red),
+                ),
+              ),
             Container(
-                padding: const EdgeInsets.only(top: 40),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
+              padding: const EdgeInsets.only(top: 40),
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
                     final username = _usernameController.text;
                     final password = _passwordController.text;
 
@@ -96,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                                content: Text('Username tidak ditemukan')),
+                                content: Text('Username atau password salah')),
                           );
                         }
                       } catch (e) {
@@ -112,19 +131,21 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     }
                   },
-                  child: const Text('Log In'),
-                )),
+                child: const Text('Log In'),
+              ),
+            ),
             Container(
               padding: const EdgeInsets.only(top: 10),
               width: double.infinity,
               child: TextButton(
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => const Daftar()));
-                },
-                child: const Text('Register'),
-              ),
-            )
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const RegisterPage()));
+                  },
+                  child: const Text('Register')),
+            ),
           ],
         ),
       ),
