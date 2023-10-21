@@ -1,71 +1,94 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/models/db_helper.dart';
+import 'package:flutter_application_1/models/novel.dart';
 import 'package:http/http.dart' as http;
 
 class ScreenPageProvider extends ChangeNotifier {
-  List _favList = [];
+  final DBHelper _dbHelper = DBHelper.instance;
+  List<Novel> _novels = [];
 
-  List get favList => _favList;
+  List<Novel> get novels => _novels;
 
-  set setFavList(val) {
-    _favList.add(val);
-    notifyListeners();
-  }
+  bool isSearching = false;
 
-  set setFavListDel(val) {
-    _favList.removeWhere(
-        (innerList) => innerList[0] == val[0] && innerList[1] == val[1]);
-    notifyListeners();
-  }
+  Future<List<Novel>?> initializeNovels() async {
+    final dbHelper = DBHelper.instance;
 
-  bool _isLogin = false;
-  bool get isLogin => _isLogin;
+    try {
+      final novelData = await getNovelData();
 
-  set login(val) {
-    _isLogin = val;
-    notifyListeners();
-  }
+      for (final novelMap in novelData!) {
+        final novel = Novel(
+          name: novelMap['name'],
+          author: novelMap['author'],
+          img: novelMap['img'],
+          genre: novelMap['genre'],
+          synopsis: novelMap['synopsis'],
+        );
 
-  String _username = '';
-  String get username => _username;
+        // Periksa apakah novel dengan nama yang sama sudah ada dalam database
+        final existingNovel = await dbHelper.getNovelByName(novel.name);
 
-  set setUsername(val) {
-    _username = val;
-    notifyListeners();
-  }
-
-  Map user = {
-    'data': [
-      {
-        'email': 'test@mail.com',
-        'username': 'test',
-        'password': 'test123',
-        "favorites": [],
-        "birthday": ""
-      },
-      {
-        'email': 'bayu@mail.com',
-        'username': 'bayu',
-        'password': 'bayu123',
-        "favorites": [],
-        "birthday": ""
+        if (existingNovel == null) {
+          // Jika novel belum ada, maka masukkan novel baru
+          await dbHelper.insertNovel(novel);
+        } else {
+          // Jika novel sudah ada, perbarui data novel yang ada
+          await dbHelper.updateNovel(novel);
+        }
       }
-    ]
-  };
 
-  Map novel = {};
+      final novels = await dbHelper.getNovels();
+      _novels = novels;
+      return novels;
+    } catch (e) {
+      print("Error: $e");
+      return null;
+    }
+  }
 
-//penerapan future asinkron dalam mengambil data novel
-  Future<Map> getNovelData() async {
+  Future<List<Map<String, dynamic>>?> getNovelData() async {
     final res = await http.get(Uri.parse(
         "https://raw.githubusercontent.com/Yuu18id/resources/main/novel.json"));
 
     if (res.statusCode == 200) {
-      Map novel = json.decode(res.body);
-      return novel;
+      final decodedData = json.decode(res.body);
+
+      if (decodedData is Map<String, dynamic> &&
+          decodedData.containsKey("data")) {
+        final novelData = decodedData["data"];
+
+        if (novelData is List &&
+            novelData.isNotEmpty &&
+            novelData[0] is Map<String, dynamic>) {
+          return List<Map<String, dynamic>>.from(novelData);
+        }
+      }
+
+      throw Exception("Gagal mengambil data: Format data tidak sesuai");
     } else {
       throw Exception("Gagal mengambil data");
     }
+  }
+
+  List<Novel> searchResults = [];
+
+  void searchNovels(String query) {
+    searchResults.clear();
+
+    // Lakukan pencarian berdasarkan nama novel
+    for (final novel in novels) {
+      if (novel.name.toLowerCase().contains(query.toLowerCase())) {
+        searchResults.add(novel);
+      }
+    }
+    notifyListeners();
+  }
+
+  void clearNovels() {
+    searchResults.clear();
+    notifyListeners();
   }
 
   DateTime date = DateTime.now();

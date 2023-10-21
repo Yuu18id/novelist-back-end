@@ -13,20 +13,21 @@ class _FavoritesBodyPageState extends State<FavoritesBodyPage> {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
-    Map<String, dynamic>? user = prov.user["data"].firstWhere(
+    /* Map<String, dynamic>? user = prov.user["data"].firstWhere(
         (userData) => userData['username'] == prov.username,
-        orElse: () => <String, Object>{});
+        orElse: () => <String, Object>{}); */
     return Scaffold(
       body: Container(
-        padding: EdgeInsets.all(10.0),
-        child: prov.username == ''
-            ? Center(
-                child: Text(
-                  'Silahkan Log In untuk menambahkan daftar favorit',
-                  style: TextStyle(color: Colors.black.withOpacity(0.5)),
-                ),
-              )
-            : Column(
+          padding: EdgeInsets.all(10.0),
+          child: /* prov.username == ''
+            ?  */
+              Center(
+            child: Text(
+              'Silahkan Log In untuk menambahkan daftar favorit',
+              style: TextStyle(color: Colors.black.withOpacity(0.5)),
+            ),
+          )
+          /* : Column(
                 children: [
                   Expanded(
                     child: GridView.count(
@@ -78,8 +79,8 @@ class _FavoritesBodyPageState extends State<FavoritesBodyPage> {
                     ),
                   ),
                 ],
-              ),
-      ),
+              ), */
+          ),
     );
   }
 }

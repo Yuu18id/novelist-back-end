@@ -24,8 +24,10 @@ class _ScreenPageState extends State<ScreenPage> {
     });
   }
 
-  List judul = ['Novelist', 'Favorites', 'Profile'];
-  List pages = [const HomePage(), const FavoritesBodyPage()];
+  List judul = ['Novelist', 'Favorites'];
+  List pages = [HomePage(), FavoritesBodyPage()];
+  final TextEditingController searchController =
+      TextEditingController(); // Tambahkan controller untuk input pencarian
 
   @override
   Widget build(BuildContext context) {
@@ -87,8 +89,8 @@ class _ScreenPageState extends State<ScreenPage> {
                   ])),
         ListTile(
           onTap: () {
-            Navigator.push(context,
-                MaterialPageRoute(builder: (context) => AboutPage()));
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AboutPage()));
           },
           leading: const Icon(Icons.info),
           title: const Text('About'),
@@ -128,9 +130,59 @@ class _ScreenPageState extends State<ScreenPage> {
           ),
         const Divider(),
       ])),
-      appBar: AppBar(
+      appBar: prov.isSearching
+          ? PreferredSize(
+              child: AppBar(
+                leading: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      if (prov.isSearching) {
+                        prov.isSearching = false;
+                        searchController.clear();
+                        prov.searchResults.clear();
+                        prov.clearNovels();
+                        // Setelah kembali dari mode pencarian, reset searchResults
+                      }
+                    });
+                  },
+                  icon: Icon(Icons.arrow_back),
+                ),
+                title: TextFormField(
+                    controller: searchController,
+                    autofocus: true,
+                    decoration: InputDecoration(
+                        hintText: 'Cari',
+                        hintStyle: TextStyle(color: Colors.white),
+                        border: InputBorder.none),
+                    onChanged: (query) {
+                      setState(() {
+                        prov.searchNovels(query);
+                      });
+                    },
+                    style: TextStyle(color: Colors.white)),
+              ),
+              preferredSize: Size.fromHeight(kToolbarHeight))
+          : AppBar(
+              title: Text(judul[_currentIndex]),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.search),
+                  onPressed: () {
+                    setState(() {
+                      prov.isSearching = true;
+                    });
+                  },
+                ),
+              ],
+            ) /* AppBar(
         title: Text(judul[_currentIndex]),
-      ),
+        actions:[IconButton(onPressed: () {
+            setState(() {
+              prov.isSearching = true;
+            });
+        }, icon: Icon(Icons.search))] 
+      ), */
+      ,
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped,

@@ -23,7 +23,6 @@ class _LoginPageState extends State<LoginPage> {
   final dbHelper = DBHelper.instance;
   bool isUserOrPassWrong = false;
 
-
   @override
   Widget build(BuildContext context) {
     final provAuth = Provider.of<AuthProvider>(context);
@@ -73,64 +72,63 @@ class _LoginPageState extends State<LoginPage> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                    final username = _usernameController.text;
-                    final password = _passwordController.text;
+                  final username = _usernameController.text;
+                  final password = _passwordController.text;
 
-                    if (username.isNotEmpty && password.isNotEmpty) {
-                      try {
-                        final existingUser = await dbHelper
-                            .getUserByUsernameAndPass(username, password);
+                  if (username.isNotEmpty && password.isNotEmpty) {
+                    try {
+                      final existingUser = await dbHelper
+                          .getUserByUsernameAndPass(username, password);
 
-                        if (existingUser != null) {
-                          if (existingUser.pass == password) {
-                            await provAuth.login(username, password);
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content: Text('Login Berhasil'),
-                              duration: Duration(seconds: 2),
-                            ));
+                      if (existingUser != null) {
+                        if (existingUser.pass == password) {
+                          await provAuth.login(username, password);
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text('Login Berhasil'),
+                            duration: Duration(seconds: 2),
+                          ));
 
-                            // Mengambil ID pengguna setelah login berhasil
-                            final userId = existingUser.id;
+                          // Mengambil ID pengguna setelah login berhasil
+                          final userId = existingUser.id;
 
-                            // Mengambil data pengguna berdasarkan ID
-                            final userById =
-                                await dbHelper.getUserById(userId!);
+                          // Mengambil data pengguna berdasarkan ID
+                          final userById = await dbHelper.getUserById(userId!);
 
-                            if (userById != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ScreenPage(
-                                    username: userById.username,
-                                  ),
+                          if (userById != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ScreenPage(
+                                  username: userById.username,
                                 ),
-                              );
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Password salah')),
+                              ),
                             );
                           }
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Username atau password salah')),
+                            const SnackBar(content: Text('Password salah')),
                           );
                         }
-                      } catch (e) {
+                      } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Login gagal: $e')),
+                          const SnackBar(
+                              content: Text('Username atau password salah')),
                         );
                       }
-                    } else {
+                    } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Username dan password harus diisi'),
-                        ),
+                        SnackBar(content: Text('Login gagal: $e')),
                       );
                     }
-                  },
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Username dan password harus diisi'),
+                      ),
+                    );
+                  }
+                },
                 child: const Text('Log In'),
               ),
             ),
