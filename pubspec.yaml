@@ -41,6 +41,10 @@ dependencies:
   sqflite: ^2.2.8+4
   flutter_rating_bar: ^4.0.1
   shared_preferences: ^2.2.2
+  firebase_core: ^2.21.0
+  firebase_auth: ^4.12.1
+  google_sign_in: ^6.1.5
+  font_awesome_flutter: ^10.4.0
 
 
 

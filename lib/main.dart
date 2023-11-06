@@ -3,6 +3,7 @@ import 'package:flutter_application_1/components/auth_provider.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'dart:math';
 
 MaterialColor generateMaterialColor(Color color) {
@@ -21,40 +22,36 @@ MaterialColor generateMaterialColor(Color color) {
 }
 
 int tintValue(int value, double factor) =>
-  max(0, min((value + ((255 - value) * factor)).round(), 255)
-);
+    max(0, min((value + ((255 - value) * factor)).round(), 255));
 
 Color tintColor(Color color, double factor) => Color.fromRGBO(
-  tintValue(color.red, factor),
-  tintValue(color.green, factor),
-  tintValue(color.blue, factor),
-  1
-);
+    tintValue(color.red, factor),
+    tintValue(color.green, factor),
+    tintValue(color.blue, factor),
+    1);
 
 int shadeValue(int value, double factor) =>
-  max(0, min(value - (value * factor).round(), 255)
-);
+    max(0, min(value - (value * factor).round(), 255));
 
 Color shadeColor(Color color, double factor) => Color.fromRGBO(
-  shadeValue(color.red, factor),
-  shadeValue(color.green, factor),
-  shadeValue(color.blue, factor),
-  1
-);
+    shadeValue(color.red, factor),
+    shadeValue(color.green, factor),
+    shadeValue(color.blue, factor),
+    1);
 
 class Palette {
   static const primary = Color.fromRGBO(13, 71, 161, 1);
 }
 
-void main() {
-  runApp(MultiProvider(
-    providers: [
-        ChangeNotifierProvider(
-          create: (_) => AuthProvider(),
-        ),
-        ChangeNotifierProvider(create: (_) => ScreenPageProvider()),
-    ]
-    ,child: const MyApp()));
+void main() async{
+    WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (_) => AuthProvider(),
+    ),
+    ChangeNotifierProvider(create: (_) => ScreenPageProvider()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

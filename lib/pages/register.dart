@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_application_1/models/db_helper.dart';
-import 'package:flutter_application_1/models/user.dart';
-import 'package:flutter_application_1/pages/home.dart';
+import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/login.dart';
-import 'package:flutter_application_1/provider.dart';
-import 'package:provider/provider.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -16,20 +10,23 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  DateTime date = DateTime.now();
-  bool isDateSet = false;
-  final dbHelper = DBHelper.instance;
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _pass = TextEditingController();
+  late AuthFirebase auth;
 
   bool? isUsernameEmpty;
   bool? isEmailEmpty;
   bool? isPasswordEmpty;
-
   bool isObscure = true;
+
+  @override
+  void initState() {
+    super.initState();
+    auth = AuthFirebase();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Register'),
@@ -47,7 +44,7 @@ class _RegisterPageState extends State<RegisterPage> {
               Container(
                 padding: const EdgeInsets.only(top: 40),
                 child: TextFormField(
-                  controller: _usernameController,
+                  controller: _email,
                   decoration: InputDecoration(
                     label: const Text('Username'),
                     errorText:
@@ -59,7 +56,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.only(top: 15),
                 child: TextFormField(
                   obscureText: isObscure,
-                  controller: _passwordController,
+                  controller: _pass,
                   decoration: InputDecoration(
                     label: const Text('Password'),
                     suffixIcon: IconButton(
@@ -77,93 +74,34 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.only(top: 15),
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
-                  visualDensity:
-                      const VisualDensity(horizontal: -4, vertical: -4),
-                  horizontalTitleGap: 0,
-                  title: const Text(
-                    'Tanggal Lahir',
-                    style: TextStyle(fontSize: 15),
-                  ),
-                  trailing: IconButton(
-                      onPressed: () async {
-                        var res = await showDatePicker(
-                            initialDatePickerMode: DatePickerMode.year,
-                            context: context,
-                            initialDate: prov.date,
-                            firstDate: DateTime(1970, 01, 01),
-                            lastDate: DateTime.now());
-
-                        if (res != null) {
-                          print(res.toString());
-                          setState(() {
-                            prov.date = res;
-                            prov.isDateSet = true;
-                          });
-                        }
-                      },
-                      icon: const Icon(Icons.calendar_month)),
-                ),
-              ),
-              prov.isDateSet != false
-                  ? Container(
-                      child: Text(
-                      prov.date.toString().split(' ')[0],
-                      textAlign: TextAlign.left,
-                    ))
-                  : Container(
-                      child: const Text(
-                        'Silahkan isi tanggal lahir',
-                        style: TextStyle(fontSize: 13),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-              Container(
                 width: double.infinity,
                 padding: const EdgeInsets.only(top: 40),
                 child: ElevatedButton(
                     onPressed: () async {
-                      final username = _usernameController.text;
-                      final password = _passwordController.text;
+                      final email = _email.text;
+                      final password = _pass.text;
 
-                      if (username.isNotEmpty) {
-                        try {
-                          final existingUser =
-                              await dbHelper.getUserByUsername(username);
+                      if (email.isEmpty) {
+                        setState(() {
+                          isEmailEmpty = true;
+                        });
+                        return;
+                      }
+                      if (password.isEmpty) {
+                        setState(() {
+                          isPasswordEmpty = true;
+                        });
+                      }
+                      final userId = await auth.signUp(email, password);
 
-                          if (existingUser != null) {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'Pengguna dengan username ini sudah terdaftar'),
-                            ));
-                          } else {
-                            final newUser =
-                                User(username: username, pass: password);
-                            await dbHelper.addUser(newUser);
-
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content:
-                                  Text('Registasi berhasil. Silahkan login'),
-                            ));
-
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
-                          }
-                        } catch (e) {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                              content: Text(
-                                  'Terjadi kesalahan saat melakukan registrasi: $e')));
-                        }
+                      if (userId != null) {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: Text('Username dan password harus diisi!'),
-                        ));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Register gagal')));
                       }
                     },
                     child: const Text('Register')),

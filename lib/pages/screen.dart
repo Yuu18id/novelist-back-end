@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/auth_provider.dart';
+import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
@@ -17,6 +18,7 @@ class ScreenPage extends StatefulWidget {
 
 class _ScreenPageState extends State<ScreenPage> {
   int _currentIndex = 0;
+  late AuthFirebase auth;
 
   void onTabTapped(int index) {
     setState(() {
@@ -24,10 +26,16 @@ class _ScreenPageState extends State<ScreenPage> {
     });
   }
 
+  @override
+  void initState() {
+    super.initState();
+    auth = AuthFirebase();
+  }
+
   List judul = ['Novelist', 'Favorites'];
   List pages = [HomePage(), FavoritesBodyPage()];
   final TextEditingController searchController =
-      TextEditingController(); // Tambahkan controller untuk input pencarian
+      TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -39,36 +47,7 @@ class _ScreenPageState extends State<ScreenPage> {
         DrawerHeader(
             padding: const EdgeInsets.all(16.0),
             decoration: const BoxDecoration(color: Colors.lightBlue),
-            child: prov1.currentUser == null //&& prov.username == ''
-                ? Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    const CircleAvatar(
-                      backgroundColor: Colors.white,
-                      minRadius: 12,
-                      maxRadius: 24,
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginPage()));
-                                },
-                                child: const Text('Log In',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                    )),
-                              ),
-                            ])),
-                  ])
-                : Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+            child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                     const CircleAvatar(
                       minRadius: 12,
                       maxRadius: 24,
@@ -96,7 +75,6 @@ class _ScreenPageState extends State<ScreenPage> {
           title: const Text('About'),
           trailing: const Icon(Icons.keyboard_arrow_right_outlined),
         ),
-        if (prov1.currentUser != null)
           ListTile(
             onTap: () {
               showDialog(
@@ -113,9 +91,10 @@ class _ScreenPageState extends State<ScreenPage> {
                           ElevatedButton(
                               onPressed: () {
                                 setState(() {
-                                  prov1.logout();
+                                  auth.signOut();
+                                  auth.signOutFromGoogle();
                                 });
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) =>
