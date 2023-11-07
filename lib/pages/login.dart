@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/screen.dart';
+import 'package:flutter_application_1/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/register.dart';
+import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,12 +27,9 @@ class _LoginPageState extends State<LoginPage> {
     auth = AuthFirebase();
   }
 
-
   @override
   Widget build(BuildContext context) {
-    auth.getUser().then((value) {
-        username = value!.email.toString();
-    });
+    final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Log In'),
@@ -73,12 +72,18 @@ class _LoginPageState extends State<LoginPage> {
                   final password = _pass.text;
 
                   final userId = await auth.login(email, password);
+                  setState(() {
+                    auth.getUser().then((value) {
+                      username = value!.email.toString();
+                    });
+                  });
 
                   if (userId != null) {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ScreenPage(username: username)));
+                            builder: (context) =>
+                                ScreenPage(username: username)));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text('Email or Password is Wrong')));
@@ -112,11 +117,29 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: () async {
                     final result = await auth.signInWithGoogle();
                     if (result != null) {
-                      Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => ScreenPage(username: username)));
+                        prov.isLogInWithGoogle = true;
+                      setState(() {
+                        auth.getUser().then((value) {
+                          username = value!.email.toString();
+                        });
+                      });
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ScreenPage(username: username)));
                     } else {
-                        Navigator.pushReplacement(context,
-                          MaterialPageRoute(builder: (context) => ScreenPage(username: username)));
+                        prov.isLogInWithGoogle = true;
+                      setState(() {
+                        auth.getUser().then((value) {
+                          username = value!.email.toString();
+                        });
+                      });
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  ScreenPage(username: username)));
                       ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Login Success')));
                     }

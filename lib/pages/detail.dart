@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
-import 'package:flutter_application_1/components/auth_provider.dart';
+import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -27,6 +27,7 @@ class _DetailPageState extends State<DetailPage> {
   TextEditingController reviewController = TextEditingController();
 
   List<Widget> reviewList = [];
+  late AuthFirebase auth;
 
   late SharedPreferences prefs;
   DBHelper _dbHelper = DBHelper.instance;
@@ -35,6 +36,7 @@ class _DetailPageState extends State<DetailPage> {
   void initState() {
     super.initState();
     _loadNovel();
+    auth = AuthFirebase();
   }
 
   Future<void> _loadNovel() async {
@@ -49,7 +51,6 @@ class _DetailPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
-    final prov1 = Provider.of<AuthProvider>(context);
     return Scaffold(
         appBar: AppBar(
           title: const Text('Detail'),
@@ -248,8 +249,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            prov1.currentUser != null
-                ? showDialog(
+           showDialog(
                     context: context,
                     barrierDismissible: false,
                     builder: (BuildContext context) {
@@ -330,12 +330,12 @@ class _DetailPageState extends State<DetailPage> {
                                             child: ListTile(
                                               leading: CircleAvatar(
                                                 radius: 50.0,
-                                                child: Text(prov1
+                                                child: Text(/* prov1
                                                     .currentUser!.username
-                                                    .toString()[0]),
+                                                    .toString()[0] */"Guest"),
                                               ),
                                               title: Text(
-                                                  '${prov1.currentUser!.username.toString()} | $currentRate'),
+                                                  /* '${prov1.currentUser!.username.toString()} | $currentRate' */"Guest"),
                                               subtitle: reviewController
                                                       .text.isNotEmpty
                                                   ? Text(reviewController.text)
@@ -356,11 +356,8 @@ class _DetailPageState extends State<DetailPage> {
                           ),
                         ),
                       );
-                    })
-                : ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: const Text('Anda harus login terlebih dahulu!'),
-                    backgroundColor: (Colors.blueAccent[700]),
-                  ));
+                    });
+
           },
           tooltip: 'Menulis Review',
           child: const Icon(Icons.comment),

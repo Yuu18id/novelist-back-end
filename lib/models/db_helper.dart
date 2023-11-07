@@ -1,7 +1,6 @@
 import 'package:flutter_application_1/models/novel.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'package:flutter_application_1/models/user.dart';
 
 class DBHelper {
   DBHelper._privateConstructor();
@@ -33,61 +32,6 @@ class DBHelper {
         )
       ''');
     });
-  }
-
-  Future<User?> getUserByUsernameAndPass(
-      String username, String password) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'users',
-      where: 'username = ? AND pass = ?',
-      whereArgs: [username, password],
-    );
-
-    if (maps.isNotEmpty) {
-      return User.fromMap(maps.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<User?> getUserByUsername(String username) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'users',
-      where: 'username = ?',
-      whereArgs: [username],
-    );
-
-    if (maps.isNotEmpty) {
-      return User.fromMap(maps.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<User?> getUserById(int userId) async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      'users',
-      where: 'id = ?',
-      whereArgs: [userId],
-    );
-
-    if (maps.isNotEmpty) {
-      return User.fromMap(maps.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<void> addUser(User user) async {
-    final db = await database;
-    await db.insert(
-      'users',
-      user.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
   }
 
   // Tambahkan fungsi-fungsi berikut untuk mengakses data buku

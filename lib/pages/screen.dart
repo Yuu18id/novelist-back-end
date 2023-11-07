@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/components/auth_provider.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
+import 'package:flutter_application_1/pages/profile.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
 
@@ -34,38 +34,74 @@ class _ScreenPageState extends State<ScreenPage> {
 
   List judul = ['Novelist', 'Favorites'];
   List pages = [HomePage(), FavoritesBodyPage()];
-  final TextEditingController searchController =
-      TextEditingController();
+  final TextEditingController searchController = TextEditingController();
+
+  String username = "";
+  String name = "";
+  String urlImg = "";
 
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
-    final prov1 = Provider.of<AuthProvider>(context);
+    auth.getUser().then((value) {
+      username = value!.email!;
+      name = value.displayName!;
+      urlImg = value.photoURL!;
+    });
     return Scaffold(
       drawer: Drawer(
           child: ListView(padding: EdgeInsets.zero, children: [
         DrawerHeader(
-            padding: const EdgeInsets.all(16.0),
-            decoration: const BoxDecoration(color: Colors.lightBlue),
-            child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    const CircleAvatar(
-                      minRadius: 12,
-                      maxRadius: 24,
-                      child: Icon(Icons.person),
-                    ),
-                    Padding(
-                        padding: const EdgeInsets.only(left: 16),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(widget.username,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  )),
-                            ])),
-                  ])),
+          padding: const EdgeInsets.all(16.0),
+          decoration:
+              const BoxDecoration(color: Color.fromRGBO(13, 71, 161, 1)),
+          child: InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ProfilePage(
+                    username: username,
+                    name: name,
+                    urlImg: urlImg,
+                  ),
+                ),
+              );
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                prov.isLogInWithGoogle
+                    ? CircleAvatar(
+                        minRadius: 12,
+                        maxRadius: 24,
+                        backgroundImage: NetworkImage(urlImg),
+                      )
+                    : CircleAvatar(
+                        minRadius: 12,
+                        maxRadius: 24,
+                        child: Icon(Icons.person),
+                      ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        widget.username,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
         ListTile(
           onTap: () {
             Navigator.push(
@@ -75,38 +111,38 @@ class _ScreenPageState extends State<ScreenPage> {
           title: const Text('About'),
           trailing: const Icon(Icons.keyboard_arrow_right_outlined),
         ),
-          ListTile(
-            onTap: () {
-              showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        title: const Text("Log Out"),
-                        content: const Text("Apakah anda yakin ingin Log Out?"),
-                        actions: [
-                          TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text("Kembali")),
-                          ElevatedButton(
-                              onPressed: () {
-                                setState(() {
-                                  auth.signOut();
-                                  auth.signOutFromGoogle();
-                                });
-                                Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()));
-                              },
-                              child: const Text("Log Out"))
-                        ],
-                      ));
-            },
-            leading: const Icon(Icons.logout),
-            title: const Text('Log Out'),
-          ),
+        ListTile(
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: const Text("Log Out"),
+                      content: const Text("Apakah anda yakin ingin Log Out?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Kembali")),
+                        ElevatedButton(
+                            onPressed: () {
+                              prov.isLogInWithGoogle = false;
+                              setState(() {
+                                auth.signOut();
+                                auth.signOutFromGoogle();
+                              });
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()));
+                            },
+                            child: const Text("Log Out"))
+                      ],
+                    ));
+          },
+          leading: const Icon(Icons.logout),
+          title: const Text('Log Out'),
+        ),
         const Divider(),
       ])),
       appBar: prov.isSearching

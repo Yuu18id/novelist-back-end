@@ -11,6 +11,7 @@ class ScreenPageProvider extends ChangeNotifier {
   List<Novel> get novels => _novels;
 
   bool isSearching = false;
+  bool isLogInWithGoogle = false;
 
   Future<List<Novel>?> initializeNovels() async {
     final dbHelper = DBHelper.instance;

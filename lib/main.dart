@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/components/auth_provider.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
@@ -47,9 +46,6 @@ void main() async{
     WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
-    ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-    ),
     ChangeNotifierProvider(create: (_) => ScreenPageProvider()),
   ], child: const MyApp()));
 }
