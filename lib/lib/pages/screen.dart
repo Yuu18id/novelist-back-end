@@ -42,7 +42,6 @@ class _ScreenPageState extends State<ScreenPage> {
 
   @override
   Widget build(BuildContext context) {
-    final themeChange = Provider.of<DarkThemeProvider>(context);
     final prov = Provider.of<ScreenPageProvider>(context);
     auth.getUser().then((value) {
       username = value!.email!;
@@ -103,107 +102,46 @@ class _ScreenPageState extends State<ScreenPage> {
             ),
           ),
         ),
-        Container(
-          padding: const EdgeInsets.only(top: 20),
-          child: Column(
-            children: [
-              Column(
-                children: [
-                  ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.settings_outlined),
-                    title: const Text('Pengaturan Profil'),
-                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
-                  ),
-                  ListTile(
-                    onTap: () {},
-                    leading: Icon(themeChange.darkTheme
-                        ? Icons.nightlight
-                        : Icons.light_mode),
-                    title: Text(
-                        themeChange.darkTheme ? 'Dark Theme' : 'Light Theme'),
-                    trailing: Switch(
-                      value: themeChange.darkTheme,
-                      onChanged: (bool value) {
-                        themeChange.darkTheme = value;
-                      },
-                    ),
-                  ),
-                  ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.book),
-                    title: const Text('List Novel'),
-                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
-                  ),
-                ],
-              ),
-              Container(
-                padding: const EdgeInsets.only(top: 160),
-                child: Align(
-                  alignment: FractionalOffset.bottomCenter,
-                  child: Column(
-                    children: [
-                      const Divider(
-                        thickness: 10,
-                      ),
-                      ListTile(
-                        onTap: (() {}),
-                        leading: const Icon(Icons.chat),
-                        trailing:
-                            const Icon(Icons.keyboard_arrow_right_outlined),
-                        title: const Text('Feedback'),
-                      ),
-                      ListTile(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => AboutPage()));
-                        },
-                        leading: const Icon(Icons.info),
-                        trailing:
-                            const Icon(Icons.keyboard_arrow_right_outlined),
-                        title: const Text('About'),
-                      ),
-                      ListTile(
-                        onTap: () {
-                          showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                    title: const Text("Log Out"),
-                                    content: const Text(
-                                        "Apakah anda yakin ingin Log Out?"),
-                                    actions: [
-                                      TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text("Kembali")),
-                                      ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
-                                              auth.signOut();
-                                              auth.signOutFromGoogle();
-                                            });
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginPage()));
-                                          },
-                                          child: const Text("Log Out"))
-                                    ],
-                                  ));
-                        },
-                        leading: const Icon(Icons.logout),
-                        title: const Text('Log Out'),
-                      ),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
+        ListTile(
+          onTap: () {
+            Navigator.push(
+                context, MaterialPageRoute(builder: (context) => AboutPage()));
+          },
+          leading: const Icon(Icons.info),
+          title: const Text('About'),
+          trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+        ),
+        ListTile(
+          onTap: () {
+            showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                      title: const Text("Log Out"),
+                      content: const Text("Apakah anda yakin ingin Log Out?"),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("Kembali")),
+                        ElevatedButton(
+                            onPressed: () {
+                              prov.isLogInWithGoogle = false;
+                              setState(() {
+                                auth.signOut();
+                                auth.signOutFromGoogle();
+                              });
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()));
+                            },
+                            child: const Text("Log Out"))
+                      ],
+                    ));
+          },
+          leading: const Icon(Icons.logout),
+          title: const Text('Log Out'),
         ),
         const Divider(),
       ])),
