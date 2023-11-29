@@ -5,6 +5,7 @@ import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/pages/profile.dart';
+import 'package:flutter_application_1/pages/test.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:provider/provider.dart';
 
@@ -133,6 +134,14 @@ class _ScreenPageState extends State<ScreenPage> {
                     onTap: () {},
                     leading: const Icon(Icons.book),
                     title: const Text('List Novel'),
+                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
+                  ),
+                  ListTile(
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => Testpage()));
+                    },
+                    leading: const Icon(Icons.book),
+                    title: const Text('test'),
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                   ),
                 ],
