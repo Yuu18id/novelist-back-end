@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/about.dart';
+import 'package:flutter_application_1/pages/browse.dart';
 import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
@@ -33,8 +34,8 @@ class _ScreenPageState extends State<ScreenPage> {
     auth = AuthFirebase();
   }
 
-  List judul = ['Novelist', 'Favorites'];
-  List pages = [HomePage(), FavoritesBodyPage()];
+  List judul = ['Novelist', 'Browse'];
+  List pages = [HomePage(), Browsepage()];
   final TextEditingController searchController = TextEditingController();
 
   String username = "";
@@ -218,6 +219,7 @@ class _ScreenPageState extends State<ScreenPage> {
       ])),
       appBar: prov.isSearching
           ? PreferredSize(
+              preferredSize: Size.fromHeight(kToolbarHeight),
               child: AppBar(
                 leading: IconButton(
                   onPressed: () {
@@ -238,16 +240,13 @@ class _ScreenPageState extends State<ScreenPage> {
                     autofocus: true,
                     decoration: InputDecoration(
                         hintText: 'Cari',
-                        hintStyle: TextStyle(color: Colors.white),
                         border: InputBorder.none),
                     onChanged: (query) {
                       setState(() {
                         prov.searchNovels(query);
                       });
-                    },
-                    style: TextStyle(color: Colors.white)),
-              ),
-              preferredSize: Size.fromHeight(kToolbarHeight))
+                    },),
+              ))
           : AppBar(
               title: Text(judul[_currentIndex]),
               actions: [
@@ -277,7 +276,7 @@ class _ScreenPageState extends State<ScreenPage> {
           items: const [
             BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
             BottomNavigationBarItem(
-                icon: Icon(Icons.thumb_up), label: 'Favorites'),
+                icon: Icon(Icons.open_in_browser), label: 'Browse'),
           ]),
     );
   }

@@ -89,6 +89,17 @@ class DBHelper {
     );
   }
 
+  Future<bool> novelExists(String name) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'novels',
+      where: 'name = ?',
+      whereArgs: [name],
+    );
+
+    return maps.isNotEmpty;
+  }
+
   /* Future<void> updatenovel(Novel novel) async {
     final db = await database;
     await db.update(

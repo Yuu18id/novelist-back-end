@@ -23,13 +23,22 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void initState() {
-    super.initState();
     auth = AuthFirebase();
+    auth.getUser().then((value) {
+      MaterialPageRoute route;
+      if (value != null) {
+        route = MaterialPageRoute(builder: (context) => ScreenPage(username: username));
+        Navigator.pushReplacement(context, route);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
+    auth.getUser().then((value) {
+      username = value!.email!;
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Log In'),
