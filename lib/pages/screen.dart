@@ -48,8 +48,8 @@ class _ScreenPageState extends State<ScreenPage> {
     final prov = Provider.of<ScreenPageProvider>(context);
     auth.getUser().then((value) {
       username = value!.email!;
-      name = value.displayName!;
-      urlImg = value.photoURL!;
+      name = value.displayName ?? "";
+      urlImg = value.photoURL ?? "";
     });
     return Scaffold(
       drawer: Drawer(
@@ -139,7 +139,8 @@ class _ScreenPageState extends State<ScreenPage> {
                   ),
                   ListTile(
                     onTap: () {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => Testpage()));
+                      Navigator.of(context).push(
+                          MaterialPageRoute(builder: (context) => Testpage()));
                     },
                     leading: const Icon(Icons.book),
                     title: const Text('test'),
@@ -219,7 +220,6 @@ class _ScreenPageState extends State<ScreenPage> {
       ])),
       appBar: prov.isSearching
           ? PreferredSize(
-              preferredSize: Size.fromHeight(kToolbarHeight),
               child: AppBar(
                 leading: IconButton(
                   onPressed: () {
@@ -246,7 +246,8 @@ class _ScreenPageState extends State<ScreenPage> {
                         prov.searchNovels(query);
                       });
                     },),
-              ))
+              ),
+              preferredSize: Size.fromHeight(kToolbarHeight))
           : AppBar(
               title: Text(judul[_currentIndex]),
               actions: [

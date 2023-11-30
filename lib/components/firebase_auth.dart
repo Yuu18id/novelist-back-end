@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_application_1/models/user.dart' as my_user;
 
 class AuthFirebase {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
@@ -46,6 +48,29 @@ class AuthFirebase {
     } on FirebaseAuthException catch (e) {
       print(e.message);
       throw e;
+    }
+  }
+
+  Future<void> addUserData(
+      String userId, String email, String username, String bio) async {
+    CollectionReference userData =
+        FirebaseFirestore.instance.collection('users');
+
+    my_user.Users newUser = my_user.Users(
+        userId: userId, username: username, email: email, bio: bio);
+    await userData.doc(userId).set(newUser.toMap());
+  }
+
+  Future<my_user.Users?> getUserData(String userId) async {
+    CollectionReference userData =
+        FirebaseFirestore.instance.collection('users');
+
+    DocumentSnapshot docSnap = await userData.doc(userId).get();
+
+    if (docSnap.exists) {
+      return my_user.Users.fromMap(docSnap.data() as Map<String, dynamic>);
+    } else {
+      return null;
     }
   }
 

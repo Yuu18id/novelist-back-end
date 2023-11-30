@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/login.dart';
@@ -23,6 +24,21 @@ class _RegisterPageState extends State<RegisterPage> {
   void initState() {
     super.initState();
     auth = AuthFirebase();
+  }
+
+  void displayMessage(String message) {
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: Text(message),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Ok'))
+              ],
+            ));
   }
 
   @override
@@ -92,16 +108,23 @@ class _RegisterPageState extends State<RegisterPage> {
                           isPasswordEmpty = true;
                         });
                       }
-                      final userId = await auth.signUp(email, password);
+                      try {
+                        UserCredential userCredential = await FirebaseAuth
+                            .instance
+                            .createUserWithEmailAndPassword(
+                                email: email, password: password);
 
-                      if (userId != null) {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text('Register gagal')));
+                        await auth.addUserData(userCredential.user!.uid, email,
+                            email.split('@')[0], "");
+
+                        if (context.mounted) {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()));
+                        }
+                      } on FirebaseAuthException catch (e) {
+                        displayMessage(e.code);
                       }
                     },
                     child: const Text('Register')),
