@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/browse.dart';
-import 'package:flutter_application_1/pages/favorites.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/pages/profile.dart';
