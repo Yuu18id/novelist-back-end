@@ -275,7 +275,7 @@ class _ScreenPageState extends State<ScreenPage> {
           currentIndex: _currentIndex,
           showUnselectedLabels: false,
           items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.download), label: 'Download'),
             BottomNavigationBarItem(
                 icon: Icon(Icons.open_in_browser), label: 'Browse'),
           ]),
