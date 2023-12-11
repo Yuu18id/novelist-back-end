@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_1/pages/comment.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +33,18 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
 
   TextEditingController reviewController = TextEditingController();
 
-  List<Widget> reviewList = [];
+  List<ReviewModel> reviewList = [];
   late AuthFirebase auth;
+
+  Future<void> getComments() async {
+    await Firebase.initializeApp();
+    final collection = FirebaseFirestore.instance.collection('comments');
+    final querySnapshot = await collection.get();
+    final docs = querySnapshot.docs;
+    setState(() {
+      reviewList = docs.map((doc) => ReviewModel.fromDocSnapshot(doc)).where((rev) => rev.bookName == widget.novel).toList();
+    });
+  }
 
   late SharedPreferences prefs;
   DBHelper _dbHelper = DBHelper.instance;
@@ -117,6 +130,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
     auth = AuthFirebase();
     getNovel();
     isNovelDownloaded();
+    getComments();
   }
 
   @override
@@ -130,7 +144,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
           title: const Text('Detail'),
         ),
         body: novel['synopsis'] == null
-            ? CircularProgressIndicator()
+            ? const CircularProgressIndicator()
             : SingleChildScrollView(
                 child: Container(
                   padding: const EdgeInsets.all(15.0),
@@ -155,8 +169,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                               fontSize: 22,
                             ),
                           ),
-                          trailing: isDownloaded? IconButton(onPressed: () {}, icon: Icon(Icons.download_done)) : IconButton(
-                            icon: Icon(Icons.download),
+                          trailing: isDownloaded? IconButton(onPressed: () {}, icon: const Icon(Icons.download_done)) : IconButton(
+                            icon: const Icon(Icons.download),
                             onPressed: () {
                               downloadNovel();
                               downloadAndSaveImage(novel["img"], novel["name"]);
@@ -272,7 +286,10 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                 child: ListView.builder(
                                   itemCount: reviewList.length,
                                   itemBuilder: (context, index) {
-                                    return reviewList[index];
+                                    return ListTile(
+                                      title: Text('${reviewList[index].username!} | ${reviewList[index].rating}'),
+                                      subtitle: Text(reviewList[index].reviewText!),
+                                    );
                                   },
                                 ),
                               ),
@@ -284,7 +301,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                 ),
               ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
+            FirebaseFirestore db = await FirebaseFirestore.instance;
             showDialog(
                 context: context,
                 barrierDismissible: false,
@@ -311,7 +329,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                             color: Colors.red, fontSize: 12),
                                       ))
                                   : const Text(''),
-                              Text('aRating:'),
+                              const Text('Rating:'),
                               const SizedBox(
                                 height: 5.0,
                               ),
@@ -350,40 +368,46 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                 maxLines: 8,
                               ),
                             ),
-                            ElevatedButton(
-                                onPressed: () async {
-                                  prefs = await SharedPreferences.getInstance();
-                                  String? nameUser = prefs.getString("name");
-                                  setState(() {
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: (){
+                                    Navigator.of(context).pop();
+                                  }, 
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: const Color.fromARGB(255, 132, 34, 34),
+                                  ),
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 20.0),
+                                    child: Text('Batal'),
+                                  )
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
                                     if (currentRate != 0.0) {
-                                      reviewList.add(Ink(
-                                        color: Colors.blue[50],
-                                        child: ListTile(
-                                          leading: CircleAvatar(
-                                            radius: 50.0,
-                                            child: Text(
-                                                /* prov1
-                                                    .currentUser!.username
-                                                    .toString()[0] */
-                                                "Guest"),
-                                          ),
-                                          title: Text(
-                                              /* '${prov1.currentUser!.username.toString()} | $currentRate' */ "Guest"),
-                                          subtitle:
-                                              reviewController.text.isNotEmpty
-                                                  ? Text(reviewController.text)
-                                                  : null,
-                                        ),
-                                      ));
+                                      ReviewModel InsertData = ReviewModel(
+                                        username: FirebaseAuth.instance.currentUser!.email?.split('@')[0].toString(),
+                                        rating: currentRate,
+                                        reviewText: reviewController.text,
+                                        bookName: novel['name']
+                                      );
+                                      await db.collection('comments').add(InsertData.toMap());
+                                      setState(() {
+                                        reviewList.add(InsertData);
+                                      });
                                       Navigator.of(context).pop();
                                     }
-                                  });
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      vertical: 8.0, horizontal: 20.0),
-                                  child: Text('Kirim'),
-                                ))
+                                  },
+                                  child: const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        vertical: 8.0, horizontal: 20.0),
+                                    child: Text('Kirim'),
+                                  )
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
