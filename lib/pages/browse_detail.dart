@@ -13,6 +13,7 @@ import 'package:flutter_application_1/models/novel.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:flutter_application_1/pages/screen.dart';
 import 'package:flutter_application_1/provider.dart';
+import 'package:localization/localization.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -60,7 +61,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
     if (querySnapshot.docs.isNotEmpty) {
       return querySnapshot.docs.first;
     } else {
-      return Future.error('Dokumen tidak ditemukan');
+      return Future.error('document_not_found'.i18n());
     }
   }
 
@@ -141,7 +142,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
 /*     print(isDownloaded); */
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Detail'),
+          title: Text('detail'.i18n()),
         ),
         body: novel['synopsis'] == null
             ? const CircularProgressIndicator()
@@ -188,7 +189,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                               padding: const EdgeInsets.symmetric(vertical: 3),
                               child: Row(
                                 children: [
-                                  const Expanded(flex: 1, child: Text('Judul')),
+                                  Expanded(flex: 1, child: Text('title'.i18n())),
                                   Expanded(flex: 3, child: Text(novel['name']))
                                 ],
                               ),
@@ -197,8 +198,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               child: Row(
                                 children: [
-                                  const Expanded(
-                                      flex: 1, child: Text('Penulis')),
+                                  Expanded(
+                                      flex: 1, child: Text('author'.i18n())),
                                   Expanded(
                                       flex: 3, child: Text(novel['author']))
                                 ],
@@ -208,8 +209,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                               padding: const EdgeInsets.symmetric(vertical: 5),
                               child: Row(
                                 children: [
-                                  const Expanded(
-                                      flex: 1, child: Text('Kategori')),
+                                  Expanded(
+                                      flex: 1, child: Text('genre'.i18n())),
                                   Expanded(flex: 3, child: Text(novel['genre']))
                                 ],
                               ),
@@ -244,13 +245,13 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                           borderRadius:
                                               BorderRadius.circular(50))),
                                   child: isWrap == false
-                                      ? const Text(
-                                          'Lihat lebih sedikit',
+                                      ? Text(
+                                          'see_less'.i18n(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         )
-                                      : const Text(
-                                          'Lihat Semua',
+                                      :  Text(
+                                          'see_more'.i18n(),
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold),
                                         )),
@@ -266,7 +267,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text('Reviews',
+                            Text('review'.i18n(),
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                             SizedBox(
@@ -275,7 +276,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                             if (reviewList.isEmpty)
                               Center(
                                 child: Text(
-                                  'Belum ada ulasan. \nJadilah yang pertama menuliskan penilaian Anda.',
+                                  'no_review'.i18n(),
                                   style: TextStyle(
                                       fontSize: 16, color: Colors.grey[600]),
                                   textAlign: TextAlign.center,
@@ -308,8 +309,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                 barrierDismissible: false,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text(
-                      'Tulis Ulasan Anda',
+                    title: Text(
+                      'write_review'.i18n(),
                       style: TextStyle(fontSize: 20),
                     ),
                     content: SizedBox(
@@ -321,15 +322,15 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                           children: [
                             Column(children: [
                               isNoRate
-                                  ? const Align(
+                                  ? Align(
                                       alignment: Alignment.centerLeft,
                                       child: Text(
-                                        '  *required',
+                                        '  '+'required'.i18n(),
                                         style: TextStyle(
                                             color: Colors.red, fontSize: 12),
                                       ))
                                   : const Text(''),
-                              const Text('Rating:'),
+                              Text('rating'.i18n()),
                               const SizedBox(
                                 height: 5.0,
                               ),
@@ -359,7 +360,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                             SizedBox(
                               child: TextFormField(
                                 decoration: InputDecoration(
-                                    hintText: 'Review...',
+                                    hintText: 'review'.i18n()+'...',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
@@ -378,10 +379,10 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: const Color.fromARGB(255, 132, 34, 34),
                                   ),
-                                  child: const Padding(
+                                  child: Padding(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 20.0),
-                                    child: Text('Batal'),
+                                    child: Text('cancel'.i18n(), style:TextStyle(color: Colors.white),),
                                   )
                                 ),
                                 ElevatedButton(
@@ -400,10 +401,10 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                       Navigator.of(context).pop();
                                     }
                                   },
-                                  child: const Padding(
+                                  child: Padding(
                                     padding: EdgeInsets.symmetric(
                                         vertical: 8.0, horizontal: 20.0),
-                                    child: Text('Kirim'),
+                                    child: Text('send'.i18n()),
                                   )
                                 ),
                               ],
@@ -415,7 +416,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                   );
                 });
           },
-          tooltip: 'Menulis Review',
+          tooltip: 'write_a_review'.i18n(),
           child: const Icon(Icons.comment),
         ));
   }

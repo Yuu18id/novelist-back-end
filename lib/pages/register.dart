@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/login.dart';
+import 'package:localization/localization.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -45,7 +46,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Register'),
+          title: Text('register'.i18n()),
         ),
         body: Container(
           color: Colors.white,
@@ -53,8 +54,8 @@ class _RegisterPageState extends State<RegisterPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text(
-                'Register',
+              Text(
+                'register'.i18n(),
                 style: TextStyle(fontSize: 29),
               ),
               Container(
@@ -62,9 +63,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: TextFormField(
                   controller: _email,
                   decoration: InputDecoration(
-                    label: const Text('Username'),
+                    label:  Text('username'.i18n()),
                     errorText:
-                        isUsernameEmpty == true ? 'Username harus diisi' : null,
+                        isUsernameEmpty == true ? 'username_alert'.i18n() : null,
                   ),
                 ),
               ),
@@ -74,7 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   obscureText: isObscure,
                   controller: _pass,
                   decoration: InputDecoration(
-                    label: const Text('Password'),
+                    label: Text('password'.i18n()),
                     suffixIcon: IconButton(
                       icon: Icon(
                           isObscure ? Icons.visibility : Icons.visibility_off),
@@ -85,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       },
                     ),
                     errorText:
-                        isPasswordEmpty == true ? 'Password harus diisi' : null,
+                        isPasswordEmpty == true ? 'password_alert'.i18n() : null,
                   ),
                 ),
               ),
@@ -127,7 +128,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         displayMessage(e.code);
                       }
                     },
-                    child: const Text('Register')),
+                    child: Text('register'.i18n())),
               ),
             ],
           ),

@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/register.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class LoginPage extends StatefulWidget {
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     });
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Log In'),
+        title: Text('login'.i18n()),
       ),
       body: Container(
         color: Colors.white,
@@ -49,8 +50,8 @@ class _LoginPageState extends State<LoginPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text(
-              'Log In',
+            Text(
+              'login'.i18n(),
               style: TextStyle(fontSize: 29),
             ),
             Container(
@@ -67,8 +68,8 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 obscureText: true,
                 controller: _pass,
-                decoration: const InputDecoration(
-                  label: Text('Password'),
+                decoration: InputDecoration(
+                  label: Text('password'.i18n()),
                 ),
               ),
             ),
@@ -95,10 +96,10 @@ class _LoginPageState extends State<LoginPage> {
                                 ScreenPage(username: username)));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Email or Password is Wrong')));
+                        SnackBar(content: Text('wrong_pass'.i18n())));
                   }
                 },
-                child: const Text('Log In'),
+                child: Text('login'.i18n()),
               ),
             ),
             Container(
@@ -111,13 +112,13 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(
                             builder: (context) => const RegisterPage()));
                   },
-                  child: const Text('Register')),
+                  child: Text('register'.i18n())),
             ),
             Container(
               padding: const EdgeInsets.all(15.0),
               width: double.infinity,
-              child: const Align(
-                  alignment: Alignment.center, child: Text('Or Login With')),
+              child:  Align(
+                  alignment: Alignment.center, child: Text('login_alter'.i18n())),
             ),
             Container(
               padding: const EdgeInsets.only(top: 13),
@@ -150,7 +151,7 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) =>
                                   ScreenPage(username: username)));
                       ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Login Success')));
+                          SnackBar(content: Text('login_success'.i18n())));
                     }
                   },
                   icon: const Icon(FontAwesomeIcons.google)),

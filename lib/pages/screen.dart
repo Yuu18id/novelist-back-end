@@ -5,8 +5,8 @@ import 'package:flutter_application_1/pages/browse.dart';
 import 'package:flutter_application_1/pages/home.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/pages/profile.dart';
-import 'package:flutter_application_1/pages/test.dart';
 import 'package:flutter_application_1/provider.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 
 class ScreenPage extends StatefulWidget {
@@ -33,7 +33,7 @@ class _ScreenPageState extends State<ScreenPage> {
     auth = AuthFirebase();
   }
 
-  List judul = ['Novelist', 'Browse'];
+  List judul = ['Novelist', 'browse_bottom_nav'.i18n()];
   List pages = [HomePage(), Browsepage()];
   final TextEditingController searchController = TextEditingController();
 
@@ -113,7 +113,7 @@ class _ScreenPageState extends State<ScreenPage> {
                   ListTile(
                     onTap: () {},
                     leading: const Icon(Icons.settings_outlined),
-                    title: const Text('Pengaturan Profil'),
+                    title: Text('profile_setting'.i18n()),
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                   ),
                   ListTile(
@@ -122,28 +122,13 @@ class _ScreenPageState extends State<ScreenPage> {
                         ? Icons.nightlight
                         : Icons.light_mode),
                     title: Text(
-                        themeChange.darkTheme ? 'Dark Theme' : 'Light Theme'),
+                        themeChange.darkTheme ? 'dark_theme'.i18n() : 'light_theme'.i18n()),
                     trailing: Switch(
                       value: themeChange.darkTheme,
                       onChanged: (bool value) {
                         themeChange.darkTheme = value;
                       },
                     ),
-                  ),
-                  ListTile(
-                    onTap: () {},
-                    leading: const Icon(Icons.book),
-                    title: const Text('List Novel'),
-                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
-                  ),
-                  ListTile(
-                    onTap: () {
-                      Navigator.of(context).push(
-                          MaterialPageRoute(builder: (context) => Testpage()));
-                    },
-                    leading: const Icon(Icons.book),
-                    title: const Text('test'),
-                    trailing: const Icon(Icons.keyboard_arrow_right_outlined),
                   ),
                 ],
               ),
@@ -161,7 +146,7 @@ class _ScreenPageState extends State<ScreenPage> {
                         leading: const Icon(Icons.chat),
                         trailing:
                             const Icon(Icons.keyboard_arrow_right_outlined),
-                        title: const Text('Feedback'),
+                        title: Text('feedback'.i18n()),
                       ),
                       ListTile(
                         onTap: () {
@@ -173,22 +158,22 @@ class _ScreenPageState extends State<ScreenPage> {
                         leading: const Icon(Icons.info),
                         trailing:
                             const Icon(Icons.keyboard_arrow_right_outlined),
-                        title: const Text('About'),
+                        title: Text('about'.i18n()),
                       ),
                       ListTile(
                         onTap: () {
                           showDialog(
                               context: context,
                               builder: (context) => AlertDialog(
-                                    title: const Text("Log Out"),
-                                    content: const Text(
-                                        "Apakah anda yakin ingin Log Out?"),
+                                    title: Text("logout".i18n()),
+                                    content:  Text(
+                                        "logout_alert".i18n()),
                                     actions: [
                                       TextButton(
                                           onPressed: () {
                                             Navigator.of(context).pop();
                                           },
-                                          child: const Text("Kembali")),
+                                          child: Text('back'.i18n())),
                                       ElevatedButton(
                                           onPressed: () {
                                             setState(() {
@@ -201,12 +186,12 @@ class _ScreenPageState extends State<ScreenPage> {
                                                     builder: (context) =>
                                                         const LoginPage()));
                                           },
-                                          child: const Text("Log Out"))
+                                          child: Text('logout'.i18n()))
                                     ],
                                   ));
                         },
                         leading: const Icon(Icons.logout),
-                        title: const Text('Log Out'),
+                        title:  Text('logout'.i18n()),
                       ),
                     ],
                   ),
@@ -238,7 +223,7 @@ class _ScreenPageState extends State<ScreenPage> {
                     controller: searchController,
                     autofocus: true,
                     decoration: InputDecoration(
-                        hintText: 'Cari',
+                        hintText: 'search'.i18n(),
                         border: InputBorder.none),
                     onChanged: (query) {
                       setState(() {
@@ -273,10 +258,10 @@ class _ScreenPageState extends State<ScreenPage> {
           onTap: onTabTapped,
           currentIndex: _currentIndex,
           showUnselectedLabels: false,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.download), label: 'Download'),
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.download), label: 'download'.i18n()),
             BottomNavigationBarItem(
-                icon: Icon(Icons.open_in_browser), label: 'Browse'),
+                icon: Icon(Icons.open_in_browser), label: 'browse'.i18n()),
           ]),
     );
   }

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/components/firestore.dart';
 import 'package:flutter_application_1/pages/browse_detail.dart';
-import 'package:flutter_application_1/pages/test2.dart';
 
 class Browsepage extends StatefulWidget {
   const Browsepage({super.key});

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/txtbox.dart';
+import 'package:localization/localization.dart';
 
 class ProfilePage extends StatelessWidget {
   final String username;
@@ -60,7 +61,7 @@ class ProfilePage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Profile Settings'),
+          title:  Text('profile_setting'.i18n()),
         ),
         body: StreamBuilder<DocumentSnapshot>(
           stream: FirebaseFirestore.instance
@@ -97,7 +98,7 @@ class ProfilePage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(left: 25),
                     child: Text(
-                      'My Details',
+                      'my_detail'.i18n(),
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                   ),
@@ -105,13 +106,13 @@ class ProfilePage extends StatelessWidget {
                   //username
                   TextBox(
                     text: userData['username'],
-                    nameSection: 'Username',
+                    nameSection: 'username'.i18n(),
                     onPressed: () => editField('username'),
                   ),
                   //bio
                   TextBox(
                     text: userData['bio'],
-                    nameSection: 'bio',
+                    nameSection: 'Bio',
                     onPressed: () => editField('bio'),
                   ),
                 ],

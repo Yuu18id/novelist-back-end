@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'dart:math';
@@ -83,9 +85,28 @@ class _MyAppState extends State<MyApp> {
       },
       child: Consumer<DarkThemeProvider>(
           builder: (BuildContext context, value, child) {
+            LocalJsonLocalization.delegate.directories = ['lib/i18n'];
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Styles.themeData(themeChangeProvider.darkTheme, context),
+          supportedLocales: const [
+            Locale('en', 'US'),
+            Locale('de', 'DE'),
+            Locale('es', 'ES'),
+            Locale('id', 'ID'),
+            Locale('it', 'IT'),
+          ],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            LocalJsonLocalization.delegate
+          ],
+          localeResolutionCallback: (locale, supportedLocales) {
+            if (supportedLocales.contains(locale)) {
+              return locale;
+            }
+            return const Locale('en', 'US');
+          },
           home: const LoginPage(),
         );
       }),
