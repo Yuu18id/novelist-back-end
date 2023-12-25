@@ -95,7 +95,6 @@ class _ScreenPageState extends State<ScreenPage> {
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 14
                         ),
                       ),
                     ],
