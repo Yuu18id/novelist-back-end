@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/prof_provider.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -46,14 +47,14 @@ class Palette {
   static const primary = Color.fromRGBO(13, 71, 161, 1);
 }
 
-void main() async{
-    WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ScreenPageProvider()),
-        ChangeNotifierProvider(
+    ChangeNotifierProvider(
       create: (_) => DarkThemeProvider(),
-    )
+    ),ChangeNotifierProvider(create: (_) => AccPictureProvider()),
   ], child: const MyApp()));
 }
 
@@ -65,7 +66,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-    DarkThemeProvider themeChangeProvider = DarkThemeProvider();
+  DarkThemeProvider themeChangeProvider = DarkThemeProvider();
 
   @override
   void initState() {
@@ -77,6 +78,7 @@ class _MyAppState extends State<MyApp> {
     themeChangeProvider.darkTheme =
         await themeChangeProvider.darkThemePreferences.getTheme();
   }
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -85,7 +87,7 @@ class _MyAppState extends State<MyApp> {
       },
       child: Consumer<DarkThemeProvider>(
           builder: (BuildContext context, value, child) {
-            LocalJsonLocalization.delegate.directories = ['lib/i18n'];
+        LocalJsonLocalization.delegate.directories = ['lib/i18n'];
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           theme: Styles.themeData(themeChangeProvider.darkTheme, context),

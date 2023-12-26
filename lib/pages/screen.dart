@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
+import 'package:flutter_application_1/components/prof_provider.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/browse.dart';
 import 'package:flutter_application_1/pages/home.dart';
@@ -45,10 +48,15 @@ class _ScreenPageState extends State<ScreenPage> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     final prov = Provider.of<ScreenPageProvider>(context);
-    auth.getUser().then((value) {
+    final provPic = Provider.of<AccPictureProvider>(context);
+    auth.getUser().then((value) async {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
+      DocumentSnapshot documentSnapshot = await usersCollection.doc(currentUser!.uid).get();
+      Map<String, dynamic>? datauser = documentSnapshot.data() as Map<String, dynamic>?;
       username = value!.email!;
       name = value.displayName ?? "";
-      urlImg = value.photoURL ?? "";
+      urlImg = datauser!['profilePicture'] ?? "";
     });
     return Scaffold(
       drawer: Drawer(
@@ -79,11 +87,17 @@ class _ScreenPageState extends State<ScreenPage> {
                         maxRadius: 24,
                         backgroundImage: NetworkImage(urlImg),
                       )
-                    : CircleAvatar(
-                        minRadius: 12,
-                        maxRadius: 24,
-                        child: Icon(Icons.person),
-                      ),
+                    : urlImg != '' && urlImg.isNotEmpty 
+                      ? CircleAvatar(
+                          minRadius: 12,
+                          maxRadius: 24,
+                          backgroundImage: NetworkImage(urlImg),
+                        )
+                      : CircleAvatar(
+                          minRadius: 12,
+                          maxRadius: 24,
+                          child: Icon(Icons.person),
+                        ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Column(

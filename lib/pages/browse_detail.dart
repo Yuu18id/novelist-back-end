@@ -50,8 +50,10 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
     });
   }
 
+  bool isDeleted = false;
+
   late SharedPreferences prefs;
-  DBHelper _dbHelper = DBHelper.instance;
+  //DBHelper _dbHelper = DBHelper.instance;
   Map<String, dynamic> novel = {};
 
   Future<DocumentSnapshot<Map<String, dynamic>>> getNovelByName(
@@ -270,7 +272,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                         padding: const EdgeInsets.all(10),
                         height: MediaQuery.of(context).size.height / 3,
                         width: MediaQuery.of(context).size.width,
-                        decoration: const BoxDecoration(color: Colors.white),
+                        //decoration: const BoxDecoration(color: Colors.white),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -294,11 +296,83 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                 child: ListView.builder(
                                   itemCount: reviewList.length,
                                   itemBuilder: (context, index) {
-                                    return ListTile(
-                                      title: Text(
-                                          '${reviewList[index].username!} | ${reviewList[index].rating}'),
-                                      subtitle:
-                                          Text(reviewList[index].reviewText!),
+                                    return Visibility(
+                                      visible: !isDeleted,
+                                      child: Card(
+                                        elevation: 2,
+                                        child: ListTile(
+                                          leading: CircleAvatar(
+                                            backgroundColor: Color.fromARGB(255, 41, 98, 255),
+                                            child: Text(reviewList[index].username![0], style: TextStyle(fontSize: 18),),
+                                          ),
+                                          title: Text('${reviewList[index].username!} | ${reviewList[index].rating}'),
+                                          subtitle: (reviewList[index].reviewText!.isEmpty) ? null : Text(reviewList[index].reviewText!),
+                                          trailing: (reviewList[index].username == FirebaseAuth.instance.currentUser!.email?.split('@')[0].toString())
+                                          ? SizedBox(
+                                              height: 24, 
+                                              width: 40, 
+                                              child: IconButton(
+                                                icon: Icon(
+                                                  Icons.delete, 
+                                                  size: 22,
+                                                  color: Color.fromARGB(255, 132, 34, 34),
+                                                ),
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (_) => AlertDialog(
+                                                          title: const Text('Hapus Komentar'),
+                                                          content: const Text('Apakah Anda yakin ingin menghapus komentar review novel Anda ini? \nJika Anda menghapus komentar review novel Anda, Anda akan kehilangan komentar ini secara permanen.'),
+                                                          actions: [
+                                                            TextButton(
+                                                              onPressed: () => Navigator.of(context).pop(),
+                                                              child: const Text('Batal')
+                                                            ),
+                                                            ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor: Colors.red[700],
+                                                              ),
+                                                              onPressed: () async {
+                                                                Navigator.of(context).pop();
+                                                                FirebaseFirestore db = await FirebaseFirestore.instance;
+                                                                QuerySnapshot querySnapshot = await db.collection('comments').get();
+                                                                List ListComm = querySnapshot.docs.map((rev) => rev.data()).toList();
+                                                                Map currentDoc = reviewList[index].toMap();
+                                                                int idx = 0;
+                                                                for (var map in ListComm) {
+                                                                  if (map.keys.length == currentDoc.keys.length && map.keys.every((key) => map[key] == currentDoc[key])) {
+                                                                    idx = ListComm.indexOf(map);
+                                                                    String documentId = querySnapshot.docs[idx].id;
+                                                                    await db.collection('comments').doc(documentId).delete();
+                                                                    setState(() {
+                                                                      isDeleted = !isDeleted;
+                                                                    });
+                                                                    final snackBar = SnackBar(
+                                                                      content: const Text('Komentar Anda berhasil dihapus!'),
+                                                                      backgroundColor: (Colors.red[700]),
+                                                                      action: SnackBarAction(
+                                                                        label: 'dismiss',
+                                                                        onPressed: () {
+                                                                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                                                        },
+                                                                      ),
+                                                                    );
+                                                                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                                                    break;
+                                                                  }
+                                                                }
+                                                              }, 
+                                                              child: Text('Hapus Komentar')
+                                                            )
+                                                          ],
+                                                    )
+                                                  );
+                                                },
+                                              ),
+                                            )
+                                          : null,
+                                        )
+                                      )
                                     );
                                   },
                                 ),
@@ -336,7 +410,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                       child: Text(
                                         '  ' + 'required'.i18n(),
                                         style: TextStyle(
-                                            color: Colors.red, fontSize: 12),
+                                            color: Color.fromARGB(255, 132, 34, 34), fontSize: 12),
                                       ))
                                   : const Text(''),
                               Text('rating'.i18n()),
@@ -399,24 +473,30 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                     )),
                                 ElevatedButton(
                                     onPressed: () async {
-                                      if (currentRate != 0.0) {
-                                        ReviewModel InsertData = ReviewModel(
-                                            username: FirebaseAuth
-                                                .instance.currentUser!.email
-                                                ?.split('@')[0]
-                                                .toString(),
-                                            rating: currentRate,
-                                            reviewText: reviewController.text,
-                                            bookName: novel['name']);
-                                        await db
-                                            .collection('comments')
-                                            .add(InsertData.toMap());
-                                        setState(() {
-                                          reviewList.add(InsertData);
-                                        });
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
+                                    final FirebaseAuth auth = FirebaseAuth.instance;
+                                    final User? user = auth.currentUser;
+                                    final String userId = user!.uid;
+
+                                    final DocumentSnapshot snapshot = await FirebaseFirestore.instance
+                                        .collection('users')
+                                        .doc(userId)
+                                        .get();
+                                    
+                                    if (currentRate != 0.0) {
+                                      ReviewModel InsertData = ReviewModel(
+                                        username: FirebaseAuth.instance.currentUser!.email?.split('@')[0].toString(),
+                                        // username: (snapshot.data() as Map<String, dynamic>)['username'],
+                                        rating: currentRate,
+                                        reviewText: reviewController.text,
+                                        bookName: novel['name']
+                                      );
+                                      await db.collection('comments').add(InsertData.toMap());
+                                      setState(() {
+                                        reviewList.add(InsertData);
+                                      });
+                                      Navigator.of(context).pop();
+                                    }
+                                  },
                                     child: Padding(
                                       padding: EdgeInsets.symmetric(
                                           vertical: 8.0, horizontal: 20.0),
