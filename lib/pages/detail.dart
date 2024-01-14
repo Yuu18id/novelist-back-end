@@ -172,7 +172,7 @@ class _DetailPageState extends State<DetailPage> {
                         ? Container(
                             padding: const EdgeInsets.only(top: 15),
                             child: Text(
-                              _novel.synopsis,
+                              _novel.synopsis.replaceAll('\\n','\n'),
                               textAlign: TextAlign.justify,
                               maxLines: 3,
                               overflow: TextOverflow.fade,
@@ -180,7 +180,7 @@ class _DetailPageState extends State<DetailPage> {
                         : Container(
                             padding: const EdgeInsets.only(top: 15),
                             child: Text(
-                              _novel.synopsis,
+                              _novel.synopsis.replaceAll('\\n','\n'),
                               textAlign: TextAlign.justify,
                             )),
                     SizedBox(

@@ -20,7 +20,7 @@ class Novel {
       'author': author,
       'img': img,
       'genre': genre,
-      'synopsis': synopsis,
+      'synopsis': synopsis
     };
   }
 

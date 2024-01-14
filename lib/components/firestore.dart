@@ -7,6 +7,7 @@ class NovelModel {
   String img;
   String genre;
   String synopsis;
+  List chapters;
 
   NovelModel(
       {this.id,
@@ -14,7 +15,8 @@ class NovelModel {
       required this.author,
       required this.img,
       required this.genre,
-      required this.synopsis});
+      required this.synopsis,
+      required this.chapters});
 
   Map<String, dynamic> toMap() {
     return {
@@ -22,7 +24,8 @@ class NovelModel {
       'author': author,
       'img': img,
       'genre': genre,
-      'synopsis': synopsis
+      'synopsis': synopsis,
+      'chapters': chapters
     };
   }
 
@@ -32,5 +35,6 @@ class NovelModel {
         author = doc.data()?['author'],
         img = doc.data()?['img'],
         genre = doc.data()?['genre'],
-        synopsis = doc.data()?['synopsis'];
+        synopsis = doc.data()?['synopsis'],
+        chapters = doc.data()?['chapters'];
 }
