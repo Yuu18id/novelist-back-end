@@ -60,16 +60,13 @@ class ProfilePage extends StatelessWidget {
       await showDialog(
           context: context,
           builder: (context) => AlertDialog(
-                backgroundColor: Colors.grey[900],
                 title: Text(
-                  "Edit $field",
-                  style: const TextStyle(color: Colors.white),
+                  "edit".i18n() +" $field",
                 ),
                 content: TextField(
                   autofocus: true,
-                  style: const TextStyle(color: Colors.white),
                   decoration: InputDecoration(
-                    hintText: "Enter new $field",
+                    hintText: "enter".i18n()+" $field",
                     hintStyle: const TextStyle(color: Colors.grey),
                   ),
                   onChanged: (value) {
@@ -79,10 +76,10 @@ class ProfilePage extends StatelessWidget {
                 actions: [
                   TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel')),
+                      child: Text('cancel'.i18n())),
                   ElevatedButton(
                     onPressed: () => Navigator.of(context).pop(newValue),
-                    child: const Text('Save'),
+                    child: Text('save'.i18n()),
                   )
                 ],
               ));
@@ -101,18 +98,18 @@ class ProfilePage extends StatelessWidget {
             builder: (context) {
               return Wrap(
                 children: [
-                  const ButtonImagePicker(
+                  ButtonImagePicker(
                     isGallery: false,
-                    title: 'Camera',
+                    title: 'camera'.i18n(),
                   ),
-                  const ButtonImagePicker(
+                  ButtonImagePicker(
                     isGallery: true,
-                    title: 'Open Gallery',
+                    title: 'open_gallery'.i18n(),
                   ),
                   Divider(),
                   ListTile(
-                    title: const Text(
-                      'Cancel',
+                    title: Text(
+                      'cancel'.i18n(),
                       textAlign: TextAlign.center,
                     ),
                     textColor: Colors.red[700],
@@ -132,18 +129,18 @@ class ProfilePage extends StatelessWidget {
               builder: (context) {
                 return Wrap(
                   children: [
-                    const ButtonImagePicker(
+                    ButtonImagePicker(
                       isGallery: false,
-                      title: 'Camera',
+                      title: 'camera'.i18n(),
                     ),
-                    const ButtonImagePicker(
+                    ButtonImagePicker(
                       isGallery: true,
-                      title: 'Open Gallery',
+                      title: 'open_gallery'.i18n(),
                     ),
                     Divider(),
                     ListTile(
-                      title: const Text(
-                        'Cancel',
+                      title: Text(
+                        'cancel'.i18n(),
                         textAlign: TextAlign.center,
                       ),
                       textColor: Colors.red[700],

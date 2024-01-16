@@ -97,12 +97,7 @@ class DBHelper {
       whereArgs: [name],
     );
 
-    if (maps.isNotEmpty) {
-      // Check if 'chapters' key is present in the first map
-      return maps.first.containsKey('chapters');
-    } else {
-      return false;
-    }
+    return maps.isNotEmpty;
   }
 
   /* Future<void> updatenovel(Novel novel) async {

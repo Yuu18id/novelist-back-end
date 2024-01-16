@@ -36,5 +36,17 @@
     "rating": "Nilai:",
     "cancel": "Batal",
     "send": "Kirim",
-    "write_a_review": "Menulis Ulasan"
+    "write_a_review": "Menulis Ulasan",
+    "del_review": "Hapus Review",
+    "del_review_alert": "Apakah Anda yakin ingin menghapus review novel ini? \nJika Anda menghapus review novel Anda, Anda akan kehilangan review ini secara permanen.",
+    "deleted_review": "Review Anda berhasil dihapus!",
+    "chapter": "Bab",
+    "no_internet": "Tidak ada koneksi internet!",
+    "email": "Email",
+    "email_alert": "Format email salah",
+    "save": "Simpan",
+    "enter": "Masukkan",
+    "edit": "Edit",
+    "camera": "Kamera",
+    "open_gallery": "Buka Galeri"
 }

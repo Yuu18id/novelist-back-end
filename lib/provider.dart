@@ -1,12 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/main.dart';
-import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
-import 'package:http/http.dart' as http;
 
 class ScreenPageProvider extends ChangeNotifier {
-  final DBHelper _dbHelper = DBHelper.instance;
   List<Novel> novels = [];
 
   bool isSearching = false;

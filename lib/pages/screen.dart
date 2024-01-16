@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
-import 'package:flutter_application_1/components/prof_provider.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/browse.dart';
 import 'package:flutter_application_1/pages/home.dart';
@@ -48,12 +48,14 @@ class _ScreenPageState extends State<ScreenPage> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     final prov = Provider.of<ScreenPageProvider>(context);
-    final provPic = Provider.of<AccPictureProvider>(context);
     auth.getUser().then((value) async {
       final currentUser = FirebaseAuth.instance.currentUser;
-      CollectionReference usersCollection = FirebaseFirestore.instance.collection('users');
-      DocumentSnapshot documentSnapshot = await usersCollection.doc(currentUser!.uid).get();
-      Map<String, dynamic>? datauser = documentSnapshot.data() as Map<String, dynamic>?;
+      CollectionReference usersCollection =
+          FirebaseFirestore.instance.collection('users');
+      DocumentSnapshot documentSnapshot =
+          await usersCollection.doc(currentUser!.uid).get();
+      Map<String, dynamic>? datauser =
+          documentSnapshot.data() as Map<String, dynamic>?;
       username = value!.email!;
       name = value.displayName ?? "";
       urlImg = datauser!['profilePicture'] ?? "";
@@ -87,17 +89,17 @@ class _ScreenPageState extends State<ScreenPage> {
                         maxRadius: 24,
                         backgroundImage: NetworkImage(urlImg),
                       )
-                    : urlImg != '' && urlImg.isNotEmpty 
-                      ? CircleAvatar(
-                          minRadius: 12,
-                          maxRadius: 24,
-                          backgroundImage: NetworkImage(urlImg),
-                        )
-                      : CircleAvatar(
-                          minRadius: 12,
-                          maxRadius: 24,
-                          child: Icon(Icons.person),
-                        ),
+                    : urlImg != '' && urlImg.isNotEmpty
+                        ? CircleAvatar(
+                            minRadius: 12,
+                            maxRadius: 24,
+                            backgroundImage: NetworkImage(urlImg),
+                          )
+                        : CircleAvatar(
+                            minRadius: 12,
+                            maxRadius: 24,
+                            child: Icon(Icons.person),
+                          ),
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Column(
@@ -107,10 +109,9 @@ class _ScreenPageState extends State<ScreenPage> {
                       Text(
                         widget.username,
                         style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14
-                        ),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14),
                       ),
                     ],
                   ),
@@ -190,16 +191,42 @@ class _ScreenPageState extends State<ScreenPage> {
                                           },
                                           child: Text('back'.i18n())),
                                       ElevatedButton(
-                                          onPressed: () {
-                                            setState(() {
+                                          onPressed: () async {
+                                            var connectivityResult =
+                                                await Connectivity()
+                                                    .checkConnectivity();
+                                            final prov =
+                                                Provider.of<ScreenPageProvider>(
+                                                    context,
+                                                    listen: false);
+
+                                            if (connectivityResult ==
+                                                ConnectivityResult.none) {
+                                              // Tidak ada koneksi internet
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Tidak ada koneksi internet!'),
+                                                  backgroundColor: Colors.red,
+                                                  duration:
+                                                      Duration(seconds: 2),
+                                                ),
+                                              );
+                                            } else {
+                                              setState(() {
                                               auth.signOut();
                                               auth.signOutFromGoogle();
                                             });
-                                            Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginPage()));
+                                            Navigator.pushAndRemoveUntil(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const LoginPage()),
+                                              (route) => false,
+                                            );
+                                            }
+                                            
                                           },
                                           child: Text('logout'.i18n()))
                                     ],

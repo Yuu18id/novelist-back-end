@@ -1,14 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
-import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_application_1/pages/screen.dart';
-import 'package:flutter_application_1/provider.dart';
 import 'package:localization/localization.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailPage extends StatefulWidget {
@@ -51,7 +45,6 @@ class _DetailPageState extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final prov = Provider.of<ScreenPageProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('detail'.i18n()),

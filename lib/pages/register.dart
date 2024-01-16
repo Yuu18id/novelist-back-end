@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
@@ -63,9 +64,9 @@ class _RegisterPageState extends State<RegisterPage> {
                 child: TextFormField(
                   controller: _email,
                   decoration: InputDecoration(
-                    label: Text('username'.i18n()),
+                    label: Text('email'.i18n()),
                     errorText: isUsernameEmpty == true
-                        ? 'username_alert'.i18n()
+                        ? 'email_alert'.i18n()
                         : null,
                   ),
                 ),
@@ -97,37 +98,51 @@ class _RegisterPageState extends State<RegisterPage> {
                 padding: const EdgeInsets.only(top: 40),
                 child: ElevatedButton(
                     onPressed: () async {
-                      final email = _email.text;
-                      final password = _pass.text;
+                      var connectivityResult =
+                          await Connectivity().checkConnectivity();
 
-                      if (email.isEmpty) {
-                        setState(() {
-                          isEmailEmpty = true;
-                        });
-                        return;
-                      }
-                      if (password.isEmpty) {
-                        setState(() {
-                          isPasswordEmpty = true;
-                        });
-                      }
-                      try {
-                        UserCredential userCredential = await FirebaseAuth
-                            .instance
-                            .createUserWithEmailAndPassword(
-                                email: email, password: password);
+                      if (connectivityResult == ConnectivityResult.none) {
+                        // Tidak ada koneksi internet
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('no_internet'.i18n()),
+                            backgroundColor: Colors.red,
+                            duration: Duration(seconds: 2),
+                          ),
+                        );
+                      } else {
+                        final email = _email.text;
+                        final password = _pass.text;
 
-                        await auth.addUserData(userCredential.user!.uid, email,
-                            email.split('@')[0], "");
-
-                        if (context.mounted) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const LoginPage()));
+                        if (email.isEmpty) {
+                          setState(() {
+                            isEmailEmpty = true;
+                          });
+                          return;
                         }
-                      } on FirebaseAuthException catch (e) {
-                        displayMessage(e.code);
+                        if (password.isEmpty) {
+                          setState(() {
+                            isPasswordEmpty = true;
+                          });
+                        }
+                        try {
+                          UserCredential userCredential = await FirebaseAuth
+                              .instance
+                              .createUserWithEmailAndPassword(
+                                  email: email, password: password);
+
+                          await auth.addUserData(userCredential.user!.uid,
+                              email, email.split('@')[0], "");
+
+                          if (context.mounted) {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const LoginPage()));
+                          }
+                        } on FirebaseAuthException catch (e) {
+                          displayMessage(e.code);
+                        }
                       }
                     },
                     child: Text('register'.i18n())),

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_1/pages/chapters.dart';
@@ -7,16 +8,12 @@ import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:flutter_application_1/pages/screen.dart';
-import 'package:flutter_application_1/provider.dart';
 import 'package:localization/localization.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BrowseDetailPage extends StatefulWidget {
@@ -96,6 +93,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
     } else {
       print('Dokumen tidak ada');
     }
+    return null;
   }
 
   bool isDownloaded = false;
@@ -155,8 +153,6 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final prov = Provider.of<ScreenPageProvider>(context);
-
 /*     print(isDownloaded); */
     return Scaffold(
         appBar: AppBar(
@@ -194,13 +190,30 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                   icon: const Icon(Icons.download_done))
                               : IconButton(
                                   icon: const Icon(Icons.download),
-                                  onPressed: () {
-                                    downloadNovel();
-                                    downloadAndSaveImage(
-                                        novel["img"], novel["name"]);
-                                    setState(() {
-                                      isDownloaded = true;
-                                    });
+                                  onPressed: () async {
+                                    var connectivityResult =
+                                        await Connectivity()
+                                            .checkConnectivity();
+
+                                    if (connectivityResult ==
+                                        ConnectivityResult.none) {
+                                      // Tidak ada koneksi internet
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text('no_internet'.i18n()),
+                                          backgroundColor: Colors.red,
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                    } else {
+                                      downloadNovel();
+                                      downloadAndSaveImage(
+                                          novel["img"], novel["name"]);
+                                      setState(() {
+                                        isDownloaded = true;
+                                      });
+                                    }
                                   },
                                 ),
                         ),
@@ -271,12 +284,12 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                   child: isWrap == false
                                       ? Text(
                                           'see_less'.i18n(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold),
                                         )
                                       : Text(
                                           'see_more'.i18n(),
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                               fontWeight: FontWeight.bold),
                                         )),
                             )
@@ -284,13 +297,13 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Chapter',
-                              style: TextStyle(
+                              'chapter'.i18n(),
+                              style: const TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
                             SizedBox(
@@ -299,22 +312,29 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                   itemCount: novel['chapters'].length,
                                   itemBuilder: (context, index) {
                                     return ListTile(
-                                      shape: Border(bottom: BorderSide(color: Colors.grey, width: 0.5)),
-                                      contentPadding: EdgeInsets.symmetric(
+                                      shape: const Border(
+                                          bottom: BorderSide(
+                                              color: Colors.grey, width: 0.5)),
+                                      contentPadding: const EdgeInsets
+                                          .symmetric(
                                           horizontal:
                                               -10.0), // Sesuaikan padding dengan kebutuhan Anda
-                                      leading: Text('Chapter ${index + 1}',
-                                          style: TextStyle(fontSize: 13)),
-                                      trailing: Icon(Icons.arrow_right),
+                                      leading: Text(
+                                          'chapter'.i18n() + ' ${index + 1}',
+                                          style: const TextStyle(fontSize: 13)),
+                                      trailing: const Icon(Icons.arrow_right),
                                       onTap: () {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => ChaptersPage(
-                                                    title:
-                                                        'Chapter ${index + 1}',
-                                                    chapter: novel['chapters']
-                                                        [index])));
+                                                builder: (context) =>
+                                                    ChaptersPage(
+                                                        title:
+                                                            'chapter'.i18n() +
+                                                                ' ${index + 1}',
+                                                        chapter:
+                                                            novel['chapters']
+                                                                [index])));
                                       },
                                     );
                                   }),
@@ -331,7 +351,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('review'.i18n(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold)),
                             SizedBox(
                                 height:
@@ -356,13 +376,14 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                             elevation: 2,
                                             child: ListTile(
                                               leading: CircleAvatar(
-                                                backgroundColor: Color.fromARGB(
-                                                    255, 41, 98, 255),
+                                                backgroundColor:
+                                                    const Color.fromARGB(
+                                                        255, 41, 98, 255),
                                                 child: Text(
                                                   reviewList[index]
                                                       .username![0],
-                                                  style:
-                                                      TextStyle(fontSize: 18),
+                                                  style: const TextStyle(
+                                                      fontSize: 18),
                                                 ),
                                               ),
                                               title: Text(
@@ -385,7 +406,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                                           height: 24,
                                                           width: 40,
                                                           child: IconButton(
-                                                            icon: Icon(
+                                                            icon: const Icon(
                                                               Icons.delete,
                                                               size: 22,
                                                               color: Color
@@ -401,20 +422,32 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                                                       context,
                                                                   builder: (_) =>
                                                                       AlertDialog(
-                                                                        title: const Text(
-                                                                            'Hapus Komentar'),
+                                                                        title: Text(
+                                                                            'del_review'.i18n()),
                                                                         content:
-                                                                            const Text('Apakah Anda yakin ingin menghapus komentar review novel Anda ini? \nJika Anda menghapus komentar review novel Anda, Anda akan kehilangan komentar ini secara permanen.'),
+                                                                            Text('del_review_alert'.i18n()),
                                                                         actions: [
                                                                           TextButton(
                                                                               onPressed: () => Navigator.of(context).pop(),
-                                                                              child: const Text('Batal')),
+                                                                              child: Text('cancel'.i18n())),
                                                                           ElevatedButton(
                                                                               style: ElevatedButton.styleFrom(
-                                                                                backgroundColor: Colors.red[700],
+                                                                                backgroundColor: Colors.red,
                                                                               ),
                                                                               onPressed: () async {
-                                                                                Navigator.of(context).pop();
+                                                                                var connectivityResult = await Connectivity().checkConnectivity();
+
+                                                                                if (connectivityResult == ConnectivityResult.none) {
+                                                                                  // Tidak ada koneksi internet
+                                                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                                                    SnackBar(
+                                                                                      content: Text('no_internet'.i18n()),
+                                                                                      backgroundColor: Colors.red,
+                                                                                      duration: Duration(seconds: 2),
+                                                                                    ),
+                                                                                  );
+                                                                                } else {
+                                                                                  Navigator.of(context).pop();
                                                                                 FirebaseFirestore db = await FirebaseFirestore.instance;
                                                                                 QuerySnapshot querySnapshot = await db.collection('comments').get();
                                                                                 List ListComm = querySnapshot.docs.map((rev) => rev.data()).toList();
@@ -429,8 +462,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                                                                       isDeleted = !isDeleted;
                                                                                     });
                                                                                     final snackBar = SnackBar(
-                                                                                      content: const Text('Komentar Anda berhasil dihapus!'),
-                                                                                      backgroundColor: (Colors.red[700]),
+                                                                                      content: Text('deleted_review'.i18n()),
+                                                                                      backgroundColor: (Colors.red),
                                                                                       action: SnackBarAction(
                                                                                         label: 'dismiss',
                                                                                         onPressed: () {
@@ -442,9 +475,11 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                                                                     break;
                                                                                   }
                                                                                 }
+                                                                                }
+                                                                                
                                                                               },
                                                                               child: Text(
-                                                                                'Hapus Komentar',
+                                                                                'del_review'.i18n(),
                                                                               ))
                                                                         ],
                                                                       ));
@@ -473,7 +508,7 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                   return AlertDialog(
                     title: Text(
                       'write_review'.i18n(),
-                      style: TextStyle(fontSize: 20),
+                      style: const TextStyle(fontSize: 20),
                     ),
                     content: SizedBox(
                       height: MediaQuery.of(context).size.height * 0.6,
@@ -488,9 +523,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                       alignment: Alignment.centerLeft,
                                       child: Text(
                                         '  ' + 'required'.i18n(),
-                                        style: TextStyle(
-                                            color: Color.fromARGB(
-                                                255, 132, 34, 34),
+                                        style: const TextStyle(
+                                            color: Colors.red,
                                             fontSize: 12),
                                       ))
                                   : const Text(''),
@@ -545,47 +579,54 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                           255, 132, 34, 34),
                                     ),
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           vertical: 8.0, horizontal: 20.0),
                                       child: Text(
                                         'cancel'.i18n(),
-                                        style: TextStyle(color: Colors.white),
+                                        style: const TextStyle(
+                                            color: Colors.white),
                                       ),
                                     )),
                                 ElevatedButton(
                                     onPressed: () async {
-                                      final FirebaseAuth auth =
-                                          FirebaseAuth.instance;
-                                      final User? user = auth.currentUser;
-                                      final String userId = user!.uid;
+                                      var connectivityResult =
+                                          await Connectivity()
+                                              .checkConnectivity();
 
-                                      final DocumentSnapshot snapshot =
-                                          await FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(userId)
-                                              .get();
-
-                                      if (currentRate != 0.0) {
-                                        ReviewModel InsertData = ReviewModel(
-                                            username: FirebaseAuth
-                                                .instance.currentUser!.email
-                                                ?.split('@')[0]
-                                                .toString(),
-                                            // username: (snapshot.data() as Map<String, dynamic>)['username'],
-                                            rating: currentRate,
-                                            reviewText: reviewController.text,
-                                            bookName: novel['name']);
-                                        await db
-                                            .collection('comments')
-                                            .add(InsertData.toMap());
-                                        setState(() {
-                                          reviewList.add(InsertData);
-                                        });
-                                        Navigator.of(context).pop();
+                                      if (connectivityResult ==
+                                          ConnectivityResult.none) {
+                                        // Tidak ada koneksi internet
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          SnackBar(
+                                            content: Text('no_internet'.i18n()),
+                                            backgroundColor: Colors.red,
+                                            duration: Duration(seconds: 2),
+                                          ),
+                                        );
+                                      } else {
+                                        if (currentRate != 0.0) {
+                                          ReviewModel InsertData = ReviewModel(
+                                              username: FirebaseAuth
+                                                  .instance.currentUser!.email
+                                                  ?.split('@')[0]
+                                                  .toString(),
+                                              // username: (snapshot.data() as Map<String, dynamic>)['username'],
+                                              rating: currentRate,
+                                              reviewText: reviewController.text,
+                                              bookName: novel['name']);
+                                          await db
+                                              .collection('comments')
+                                              .add(InsertData.toMap());
+                                          setState(() {
+                                            reviewList.add(InsertData);
+                                          });
+                                          Navigator.of(context).pop();
+                                        }
                                       }
                                     },
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
+                                      padding: const EdgeInsets.symmetric(
                                           vertical: 8.0, horizontal: 20.0),
                                       child: Text('send'.i18n()),
                                     )),
