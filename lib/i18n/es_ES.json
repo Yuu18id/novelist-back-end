@@ -15,6 +15,7 @@
   "search": "Buscar",
   "browse": "Explorar",
   "download": "Descargar",
+  "download_success": "Descarga completada",
   "password": "Contraseña",
   "password_alert": "La contraseña debe ser completada",
   "wrong_pass": "Correo electrónico o contraseña incorrecta",

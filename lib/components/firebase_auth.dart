@@ -49,6 +49,7 @@ class AuthFirebase {
       print(e.message);
       throw e;
     }
+    return null;
   }
 
   Future<void> addUserData(

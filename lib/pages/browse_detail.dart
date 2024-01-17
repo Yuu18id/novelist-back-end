@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_1/components/notification.dart';
 import 'package:flutter_application_1/pages/chapters.dart';
 import 'package:flutter_application_1/pages/comment.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
@@ -35,6 +35,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
   List<ReviewModel> reviewList = [];
   List<ReviewModel> chapterList = [];
   late AuthFirebase auth;
+
+  final Noti noti = Noti();
 
   Future<void> getComments() async {
     await Firebase.initializeApp();
@@ -207,6 +209,8 @@ class _TestDBrowselPageState extends State<BrowseDetailPage> {
                                         ),
                                       );
                                     } else {
+                                      noti.showLocalNoti(
+                                        'download'.i18n(), 'download_success'.i18n());
                                       downloadNovel();
                                       downloadAndSaveImage(
                                           novel["img"], novel["name"]);

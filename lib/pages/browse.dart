@@ -19,7 +19,8 @@ class BrowsepageState extends State<Browsepage> {
     FirebaseFirestore db = await FirebaseFirestore.instance;
     var data = await db.collection('novels').get();
     setState(() {
-      details = data.docs.map((doc) => NovelModel.fromDocSnapshot(doc)).toList();
+      details =
+          data.docs.map((doc) => NovelModel.fromDocSnapshot(doc)).toList();
     });
   }
 
@@ -31,13 +32,11 @@ class BrowsepageState extends State<Browsepage> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
-      body: Container(
+        body: Container(
       padding: const EdgeInsets.all(10.0),
       child: Center(
-        
-        child:  Column(
+        child: Column(
           children: [
             Expanded(
               child: GridView.builder(
@@ -55,7 +54,9 @@ class BrowsepageState extends State<Browsepage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => BrowseDetailPage(novel: details[index].name,),
+                          builder: (context) => BrowseDetailPage(
+                            novel: details[index].name,
+                          ),
                         ),
                       );
                     },
@@ -99,8 +100,6 @@ class BrowsepageState extends State<Browsepage> {
           ],
         ),
       ),
-    )
-    );
-
+    ));
   }
 }

@@ -15,6 +15,7 @@
     "search": "Search",
     "browse": "Browse",
     "download": "Download",
+    "download_success": "Download completed",
     "password": "Password",
     "password_alert": "Password must be filled",
     "wrong_pass": "Incorrect email or password",
