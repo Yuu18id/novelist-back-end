@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/components/ad_mobs_manager.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
 import 'package:flutter_application_1/pages/detail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/provider.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -16,6 +18,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Novel> listNovel = [];
   final TextEditingController searchController = TextEditingController();
+
+  late BannerAd bannerAd;
+  bool isBannerVisible = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (isBannerVisible) {
+      bannerAd = BannerAd(
+        size: AdSize.banner,
+        adUnitId: AddMobManage.bannerAdID,
+        listener: const BannerAdListener(),
+        request: const AdRequest(),
+      );
+      bannerAd.load();
+    } else {
+      setState(() {
+        isBannerVisible = false;
+      });
+    }
+  }
 
   Future initNovel() async {
     final prov = Provider.of<ScreenPageProvider>(context);
@@ -121,6 +145,16 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
+                    Align(
+                        alignment: Alignment.bottomCenter,
+                        child: Visibility(
+                          visible: isBannerVisible,
+                          child: SizedBox(
+                            width: bannerAd.size.width.toDouble(),
+                            height: bannerAd.size.height.toDouble(),
+                            child: AdWidget(ad: bannerAd),
+                          ),
+                        )),
                   ],
                 ),
               );
@@ -129,5 +163,12 @@ class _HomePageState extends State<HomePage> {
             }
           }),
     ));
+  }
+  @override
+  void dispose() {
+    if (isBannerVisible) {
+      bannerAd.dispose();
+    }
+    super.dispose();
   }
 }

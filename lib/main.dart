@@ -3,6 +3,7 @@ import 'package:flutter_application_1/components/prof_provider.dart';
 import 'package:flutter_application_1/pages/login.dart';
 import 'package:flutter_application_1/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:localization/localization.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -50,6 +51,7 @@ class Palette {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  MobileAds.instance.initialize();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => ScreenPageProvider()),
     ChangeNotifierProvider(
