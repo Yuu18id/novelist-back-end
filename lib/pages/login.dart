@@ -21,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   late AuthFirebase auth;
   bool isUserOrPassWrong = false;
   String username = "";
+  String userId = "";
 
   Future<void> _checkInternetAndLogin() async {
     var connectivityResult = await Connectivity().checkConnectivity();
@@ -78,25 +79,33 @@ class _LoginPageState extends State<LoginPage> {
       if (result != null) {
         prov.isLogInWithGoogle = true;
         setState(() {
-          auth.getUser().then((value) {
+          auth.getUser().then((value)  async{
             username = value!.email.toString();
+            userId = value.uid.toString();
+            await auth.addUserData(userId, username, username.split('@')[0], "");
           });
         });
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => ScreenPage(username: username)));
+        
       } else {
         prov.isLogInWithGoogle = true;
         setState(() {
-          auth.getUser().then((value) {
+          auth.getUser().then((value) async {
             username = value!.email.toString();
+            userId = value.uid.toString();
+            await auth.addUserData(userId, username, username.split('@')[0], "");
           });
         });
+
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
                 builder: (context) => ScreenPage(username: username)));
+        
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text('login_success'.i18n())));
       }

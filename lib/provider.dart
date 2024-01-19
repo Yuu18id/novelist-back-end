@@ -7,6 +7,7 @@ class ScreenPageProvider extends ChangeNotifier {
 
   bool isSearching = false;
   bool isLogInWithGoogle = false;
+  bool isNoAd = false;
 
   List<Novel> searchResults = [];
 

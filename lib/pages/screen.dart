@@ -1,8 +1,11 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/firebase_auth.dart';
+import 'package:flutter_application_1/components/prof_provider.dart';
 import 'package:flutter_application_1/pages/about.dart';
 import 'package:flutter_application_1/pages/browse.dart';
 import 'package:flutter_application_1/pages/home.dart';
@@ -30,10 +33,13 @@ class _ScreenPageState extends State<ScreenPage> {
     });
   }
 
+  
+
   @override
   void initState() {
     super.initState();
     auth = AuthFirebase();
+  
   }
 
   List judul = ['Novelist', 'browse_bottom_nav'.i18n()];
@@ -43,11 +49,33 @@ class _ScreenPageState extends State<ScreenPage> {
   String username = "";
   String name = "";
   String urlImg = "";
+  final currentUserDocRef = FirebaseFirestore.instance
+      .collection('users')
+      .doc(FirebaseAuth.instance.currentUser!.uid);
+
+  Future<void> updateProfilePicture(Image image) async {
+    currentUserDocRef.update({
+      'profilePicture': image,
+    });
+    print('updated!');
+  }
+
+  Future<void> _updateProfilePicture() async {
+    final provPic = Provider.of<AccPictureProvider>(context);
+    if (provPic.isImageLoaded) {
+      final image = Image.file(File(provPic.img!.path));
+      await updateProfilePicture(image);
+      setState(() {
+        urlImg = provPic.img!.path;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     final prov = Provider.of<ScreenPageProvider>(context);
+    final provPic = Provider.of<AccPictureProvider>(context);
     auth.getUser().then((value) async {
       final currentUser = FirebaseAuth.instance.currentUser;
       CollectionReference usersCollection =
@@ -58,8 +86,14 @@ class _ScreenPageState extends State<ScreenPage> {
           documentSnapshot.data() as Map<String, dynamic>?;
       username = value!.email!;
       name = value.displayName ?? "";
-      urlImg = datauser!['profilePicture'] ?? "";
+      urlImg = datauser!['profilePicture'];
     });
+
+provPic.isImageLoaded ? urlImg = provPic.img!.path : null;
+              provPic.isImageLoaded
+                  ? updateProfilePicture(Image.file(File(urlImg)))
+                  : null;
+
     return Scaffold(
       drawer: Drawer(
           child: ListView(padding: EdgeInsets.zero, children: [
@@ -82,24 +116,15 @@ class _ScreenPageState extends State<ScreenPage> {
             },
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                prov.isLogInWithGoogle
-                    ? CircleAvatar(
-                        minRadius: 12,
-                        maxRadius: 24,
-                        backgroundImage: NetworkImage(urlImg),
-                      )
-                    : urlImg != '' && urlImg.isNotEmpty
+              children: [urlImg.isNotEmpty && provPic.isImageLoaded == false
                         ? CircleAvatar(
-                            minRadius: 12,
-                            maxRadius: 24,
-                            backgroundImage: NetworkImage(urlImg),
-                          )
-                        : CircleAvatar(
-                            minRadius: 12,
-                            maxRadius: 24,
-                            child: Icon(Icons.person),
-                          ),
+                            minRadius: 12, maxRadius: 24, backgroundImage: NetworkImage(urlImg))
+                        : urlImg.isNotEmpty && provPic.isImageLoaded == true
+                            ? CircleAvatar(
+                                minRadius: 12, maxRadius: 24,
+                                backgroundImage: FileImage(File(urlImg)))
+                            : Icon(Icons.person, size: 16),
+                        
                 Padding(
                   padding: const EdgeInsets.only(left: 16),
                   child: Column(
@@ -127,7 +152,19 @@ class _ScreenPageState extends State<ScreenPage> {
               Column(
                 children: [
                   ListTile(
-                    onTap: () {},
+                    onTap: () {
+                      print(urlImg);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(
+                            username: username,
+                            name: name,
+                            urlImg: urlImg,
+                          ),
+                        ),
+                      );
+                    },
                     leading: const Icon(Icons.settings_outlined),
                     title: Text('profile_setting'.i18n()),
                     trailing: const Icon(Icons.keyboard_arrow_right_outlined),
@@ -147,6 +184,18 @@ class _ScreenPageState extends State<ScreenPage> {
                       },
                     ),
                   ),
+                  /* ListTile(
+                    onTap: () {},
+                    leading: Icon(Icons.ad_units),
+                    title: Text('noad'),
+                    trailing: Switch(
+                      value: prov.isNoAd,
+                      onChanged: (bool val) {
+                        prov.isNoAd =val;
+                        print(prov.isNoAd);
+                      },
+                    ),
+                  ), */
                 ],
               ),
               Container(
@@ -215,18 +264,17 @@ class _ScreenPageState extends State<ScreenPage> {
                                               );
                                             } else {
                                               setState(() {
-                                              auth.signOut();
-                                              auth.signOutFromGoogle();
-                                            });
-                                            Navigator.pushAndRemoveUntil(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const LoginPage()),
-                                              (route) => false,
-                                            );
+                                                auth.signOut();
+                                                auth.signOutFromGoogle();
+                                              });
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginPage()),
+                                                (route) => false,
+                                              );
                                             }
-                                            
                                           },
                                           child: Text('logout'.i18n()))
                                     ],
@@ -295,7 +343,20 @@ class _ScreenPageState extends State<ScreenPage> {
         }, icon: Icon(Icons.search))] 
       ), */
       ,
-      body: pages[_currentIndex],
+      body: FutureBuilder(
+        future: _updateProfilePicture(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // Build your widget here
+            return pages[_currentIndex];
+          } else {
+            // Show a loading indicator while updating the profile picture
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
       bottomNavigationBar: BottomNavigationBar(
           onTap: onTabTapped,
           currentIndex: _currentIndex,

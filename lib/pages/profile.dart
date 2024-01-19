@@ -54,6 +54,8 @@ class ProfilePage extends StatelessWidget {
     final currentUser = FirebaseAuth.instance.currentUser;
     final userData = FirebaseFirestore.instance.collection('users');
 
+    
+
     //edit field
     Future<void> editField(String field) async {
       String newValue = "";
@@ -184,7 +186,7 @@ class ProfilePage extends StatelessWidget {
               .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final userData = snapshot.data!.data() as Map<String, dynamic>;
+              final userData = snapshot.data!.data() as Map<String, dynamic> ?? {};
               getProfPic();
               provPic.isImageLoaded ? urlImg = provPic.img!.path : null;
               provPic.isImageLoaded
@@ -235,13 +237,13 @@ class ProfilePage extends StatelessWidget {
 
                   //username
                   TextBox(
-                    text: userData['username'],
+                    text: userData['username'] ?? 'a',
                     nameSection: 'username'.i18n(),
                     onPressed: () => editField('username'),
                   ),
                   //bio
                   TextBox(
-                    text: userData['bio'],
+                    text: userData['bio'] ?? 'a',
                     nameSection: 'Bio',
                     onPressed: () => editField('bio'),
                   ),
