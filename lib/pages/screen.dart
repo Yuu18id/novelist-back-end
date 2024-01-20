@@ -123,7 +123,7 @@ provPic.isImageLoaded ? urlImg = provPic.img!.path : null;
                             ? CircleAvatar(
                                 minRadius: 12, maxRadius: 24,
                                 backgroundImage: FileImage(File(urlImg)))
-                            : Icon(Icons.person, size: 16),
+                            : Icon(Icons.person, size: 30),
                         
                 Padding(
                   padding: const EdgeInsets.only(left: 16),

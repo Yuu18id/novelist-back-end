@@ -148,8 +148,6 @@ class Styles {
           isDarkTheme ? const Color(0xff0E1D36) : const Color(0xffCBDCF8),
       hintColor:
           isDarkTheme ? const Color(0xff280C0B) : const Color(0xff280C0B),
-      highlightColor:
-          isDarkTheme ? const Color(0xff372901) : const Color(0xffFCE192),
       hoverColor:
           isDarkTheme ? const Color(0xff3A3A3B) : const Color(0xff4285F4),
       focusColor:

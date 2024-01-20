@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/components/ad_mobs_manager.dart';
 import 'package:flutter_application_1/models/db_helper.dart';
 import 'package:flutter_application_1/models/novel.dart';
+import 'package:flutter_application_1/pages/analytics.dart';
 import 'package:flutter_application_1/pages/detail.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
@@ -21,9 +22,11 @@ class _HomePageState extends State<HomePage> {
 
   late BannerAd bannerAd;
   bool isBannerVisible = true;
+  MyAnalyticsHelper fbAnalytics = MyAnalyticsHelper();
 
   @override
   void initState() {
+    fbAnalytics.logScreenView('Home Page');
     super.initState();
 
     if (isBannerVisible) {
@@ -65,8 +68,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final prov = Provider.of<ScreenPageProvider>(context);
-    
+
     return Scaffold(
+      resizeToAvoidBottomInset : false,
         body: Center(
       child: FutureBuilder(
           future: DBHelper.instance.getNovels(),
@@ -92,7 +96,7 @@ class _HomePageState extends State<HomePage> {
                           mainAxisSpacing: 10,
                         ),
                         itemCount: prov.isSearching
-                            ? prov.searchResults.length 
+                            ? prov.searchResults.length
                             : listNovel.length,
                         itemBuilder: (context, index) {
                           final novel = prov.isSearching
@@ -164,6 +168,7 @@ class _HomePageState extends State<HomePage> {
           }),
     ));
   }
+
   @override
   void dispose() {
     if (isBannerVisible) {

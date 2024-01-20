@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_1/components/ad_mobs_manager.dart';
 import 'package:flutter_application_1/components/firestore.dart';
+import 'package:flutter_application_1/pages/analytics.dart';
 import 'package:flutter_application_1/pages/browse_detail.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -30,6 +31,8 @@ class BrowsepageState extends State<Browsepage> {
     });
   }
 
+  MyAnalyticsHelper fbAnalytics = MyAnalyticsHelper();
+
   void loadInterstitialAd() {
     InterstitialAd.load(
         adUnitId: AddMobManage.interstitialAdId,
@@ -51,6 +54,7 @@ class BrowsepageState extends State<Browsepage> {
 
   @override
   void initState() {
+    fbAnalytics.logScreenView('Browse Page');
     readData();
     super.initState();
     if (isBannerVisible) {
@@ -72,6 +76,7 @@ class BrowsepageState extends State<Browsepage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
         body: Container(
       padding: const EdgeInsets.all(10.0),
       child: Center(
@@ -154,8 +159,8 @@ class BrowsepageState extends State<Browsepage> {
         ),
       ),
     ));
-    
   }
+
   @override
   void dispose() {
     if (isBannerVisible) {

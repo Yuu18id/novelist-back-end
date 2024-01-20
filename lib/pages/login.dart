@@ -132,6 +132,7 @@ class _LoginPageState extends State<LoginPage> {
       username = value!.email!;
     });
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       appBar: AppBar(
         title: Text('login'.i18n()),
       ),
