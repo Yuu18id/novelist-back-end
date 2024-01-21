@@ -41,6 +41,72 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547040729181:android:7fd327fe5d4aba197f95b4",
+        "android_client_info": {
+          "package_name": "com.example.novelist_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547040729181-s52c6juq2vv1674fjjr2c6og4ksua44v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSbQ7JUuzk3sGc68clhwybtz8-A9tyNxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547040729181-s52c6juq2vv1674fjjr2c6og4ksua44v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:547040729181:android:0c61d7a6a0dd0e657f95b4",
+        "android_client_info": {
+          "package_name": "com.novelist.novelist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "547040729181-vaftiad43b86igebkrchn9i6oril6cr7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.novelist.novelist",
+            "certificate_hash": "a6466ba0cdc8461a41c51e8498ed02fba942065a"
+          }
+        },
+        {
+          "client_id": "547040729181-s52c6juq2vv1674fjjr2c6og4ksua44v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSbQ7JUuzk3sGc68clhwybtz8-A9tyNxA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "547040729181-s52c6juq2vv1674fjjr2c6og4ksua44v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

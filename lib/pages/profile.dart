@@ -103,6 +103,7 @@ class ProfilePage extends StatelessWidget {
                   ButtonImagePicker(
                     isGallery: false,
                     title: 'camera'.i18n(),
+                    
                   ),
                   ButtonImagePicker(
                     isGallery: true,
