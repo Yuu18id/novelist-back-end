@@ -26,6 +26,7 @@ class ScreenPage extends StatefulWidget {
 class _ScreenPageState extends State<ScreenPage> {
   int _currentIndex = 0;
   late AuthFirebase auth;
+  late User? currentUser;
 
   void onTabTapped(int index) {
     setState(() {
@@ -39,7 +40,11 @@ class _ScreenPageState extends State<ScreenPage> {
   void initState() {
     super.initState();
     auth = AuthFirebase();
-  
+    auth.getUser().then((value) {
+      setState(() {
+        currentUser = FirebaseAuth.instance.currentUser;
+      });
+    });
   }
 
   List judul = ['Novelist', 'browse_bottom_nav'.i18n()];
@@ -88,6 +93,9 @@ class _ScreenPageState extends State<ScreenPage> {
       name = value.displayName ?? "";
       urlImg = datauser!['profilePicture'];
     });
+      final currentUserDocRef = currentUser != null
+        ? FirebaseFirestore.instance.collection('users').doc(currentUser!.uid)
+        : null;
 
 provPic.isImageLoaded ? urlImg = provPic.img!.path : null;
               provPic.isImageLoaded
